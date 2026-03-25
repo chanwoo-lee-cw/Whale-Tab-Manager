@@ -56,6 +56,18 @@ async function mergeTabGroups(groupIds, newName) {
   await chrome.storage.local.set({ tabGroups: remaining });
 }
 
+async function addEmptySession(name) {
+  const groups = await getAllTabGroups();
+  const newGroup = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    name: name.trim() || '새 세션',
+    createdAt: Date.now(),
+    tabs: [],
+  };
+  groups.unshift(newGroup);
+  await chrome.storage.local.set({ tabGroups: groups });
+}
+
 if (typeof module !== 'undefined') {
-  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups };
+  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession };
 }

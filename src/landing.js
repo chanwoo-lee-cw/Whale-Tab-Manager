@@ -5,10 +5,12 @@ const mergeCountEl = document.getElementById('merge-count');
 const mergeBtnEl = document.getElementById('merge-btn');
 const searchInputEl = document.getElementById('search-input');
 const foldAllBtnEl = document.getElementById('btn-fold-all');
+const sidebarEl = document.getElementById('session-sidebar');
 
 let _allGroups = [];
 const _selectedIds = new Set();
 const _foldedIds = new Set();
+let _sidebarObserver = null;
 
 function formatDate(timestamp) {
   const d = new Date(timestamp);
@@ -30,10 +32,48 @@ function filterGroups(groups, query) {
     .filter(Boolean);
 }
 
+function renderSidebar(groups) {
+  if (!sidebarEl) return;
+  sidebarEl.innerHTML = '';
+
+  if (_sidebarObserver) {
+    _sidebarObserver.disconnect();
+    _sidebarObserver = null;
+  }
+
+  if (groups.length === 0) return;
+
+  groups.forEach(group => {
+    const item = document.createElement('button');
+    item.className = 'sidebar-item';
+    item.dataset.groupId = group.id;
+    item.textContent = group.name;
+    item.title = group.name;
+    item.addEventListener('click', () => {
+      const card = document.querySelector(`.group-card[data-group-id="${group.id}"]`);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    sidebarEl.appendChild(item);
+  });
+
+  _sidebarObserver = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        const groupId = entry.target.dataset.groupId;
+        const sidebarItem = sidebarEl.querySelector(`.sidebar-item[data-group-id="${groupId}"]`);
+        if (sidebarItem) sidebarItem.classList.toggle('is-active', entry.isIntersecting);
+      });
+    },
+    { rootMargin: '-10% 0px -70% 0px' }
+  );
+
+  document.querySelectorAll('.group-card').forEach(card => _sidebarObserver.observe(card));
+}
+
 function updateFoldAllBtn() {
   if (!foldAllBtnEl || _allGroups.length === 0) return;
   const allFolded = _allGroups.every(g => _foldedIds.has(g.id));
-  foldAllBtnEl.textContent = allFolded ? '모두 펼치기' : '모두 접기';
+  foldAllBtnEl.textContent = allFolded ? '세션 전부 펼치기' : '세션 전부 접기';
 }
 
 function toggleFoldGroup(groupId, tabList, foldBtn) {
@@ -255,6 +295,7 @@ function renderGroupList(groups) {
   if (groups.length === 0) {
     emptyStateEl.classList.remove('hidden');
     groupListEl.classList.add('hidden');
+    renderSidebar([]);
     return;
   }
 
@@ -262,6 +303,7 @@ function renderGroupList(groups) {
   groupListEl.classList.remove('hidden');
   groups.forEach(group => groupListEl.appendChild(createGroupCardEl(group)));
   updateFoldAllBtn();
+  renderSidebar(groups);
 }
 
 async function refreshGroupList() {
@@ -300,6 +342,17 @@ function bindFoldAll() {
   });
 }
 
+function bindAddSession() {
+  const addSessionBtnEl = document.getElementById('btn-add-session');
+  if (!addSessionBtnEl) return;
+  addSessionBtnEl.addEventListener('click', async () => {
+    const name = prompt('새 세션 이름을 입력하세요:', '새 세션');
+    if (name === null) return;
+    await addEmptySession(name.trim() || '새 세션');
+    await refreshGroupList();
+  });
+}
+
 function bindMergeBar() {
   if (!mergeBtnEl) return;
   mergeBtnEl.addEventListener('click', async () => {
@@ -322,6 +375,7 @@ if (typeof document !== 'undefined' && typeof module === 'undefined') {
     bindSearchInput();
     bindMergeBar();
     bindFoldAll();
+    bindAddSession();
   });
 }
 

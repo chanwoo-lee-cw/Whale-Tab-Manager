@@ -29,36 +29,50 @@
         </svg>
         <input id="search-input" type="search" placeholder="탭 제목, URL, 그룹 이름 검색…" autocomplete="off" spellcheck="false">
       </div>
-      <button id="btn-fold-all" class="btn-fold-all">모두 접기</button>
+      <div class="header-actions-right">
+        <button id="btn-add-session" class="btn-add-session" title="새 세션 추가">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          새 세션
+        </button>
+        <button id="btn-fold-all" class="btn-fold-all">세션 전부 접기</button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <div id="merge-bar" class="hidden">
-      <div class="merge-bar-inner">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <path d="M8 6H21M8 12H21M8 18H21M3 6h.01M3 12h.01M3 18h.01"/>
-        </svg>
-        <span id="merge-count"></span>
-        <button id="merge-btn" disabled>병합 실행</button>
+  <div class="page-body">
+    <nav id="session-sidebar" aria-label="세션 목록"></nav>
+
+    <div class="content-layout">
+      <div id="merge-bar" class="hidden">
+        <div class="merge-bar-inner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M8 6H21M8 12H21M8 18H21M3 6h.01M3 12h.01M3 18h.01"/>
+          </svg>
+          <span id="merge-count"></span>
+          <button id="merge-btn" disabled>병합 실행</button>
+        </div>
       </div>
+
+      <div id="empty-state" class="hidden">
+        <div class="empty-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="10" width="36" height="28" rx="3"/>
+            <path d="M6 16h36"/>
+            <path d="M14 10V6M34 10V6"/>
+            <path d="M14 24h12M14 30h8"/>
+          </svg>
+        </div>
+        <p>보관된 탭이 없습니다</p>
+        <p class="empty-sub">팝업에서 탭을 저장하면 이곳에 아카이브됩니다.</p>
+      </div>
+
+      <ul id="group-list" class="hidden"></ul>
     </div>
 
-    <div id="empty-state" class="hidden">
-      <div class="empty-icon" aria-hidden="true">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="6" y="10" width="36" height="28" rx="3"/>
-          <path d="M6 16h36"/>
-          <path d="M14 10V6M34 10V6"/>
-          <path d="M14 24h12M14 30h8"/>
-        </svg>
-      </div>
-      <p>보관된 탭이 없습니다</p>
-      <p class="empty-sub">팝업에서 탭을 저장하면 이곳에 아카이브됩니다.</p>
-    </div>
-
-    <ul id="group-list" class="hidden"></ul>
-  </main>
+    <div class="sidebar-spacer" aria-hidden="true"></div>
+  </div>
 
   <script src="src/tab-group.js"></script>
   <script src="src/landing.js"></script>
