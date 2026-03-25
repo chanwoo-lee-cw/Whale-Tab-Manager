@@ -56,6 +56,17 @@ async function mergeTabGroups(groupIds, newName) {
   await chrome.storage.local.set({ tabGroups: remaining });
 }
 
+async function toggleFavorite(groupId) {
+  const groups = await getAllTabGroups();
+  const group = groups.find(g => g.id === groupId);
+  if (!group) {
+    console.warn(`[tab-group] toggleFavorite: groupId ${groupId} not found`);
+    return;
+  }
+  group.isFavorite = !group.isFavorite;
+  await chrome.storage.local.set({ tabGroups: groups });
+}
+
 async function addEmptySession(name) {
   const groups = await getAllTabGroups();
   const newGroup = {
@@ -69,5 +80,5 @@ async function addEmptySession(name) {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession };
+  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite };
 }

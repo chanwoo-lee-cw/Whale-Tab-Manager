@@ -427,6 +427,15 @@ header::before {
   box-shadow: 0 4px 20px rgba(181, 91, 38, 0.1);
 }
 
+.group-card.is-favorite {
+  border-left-color: #d4a53a;
+  box-shadow: 0 2px 8px rgba(212, 165, 58, 0.12), 0 4px 16px rgba(212, 165, 58, 0.08);
+}
+
+.group-card.is-favorite .group-header {
+  background: linear-gradient(to right, rgba(212, 165, 58, 0.06), var(--surface-2));
+}
+
 /* ═══════════════════════════════════════
    GROUP HEADER
 ═══════════════════════════════════════ */
@@ -625,6 +634,26 @@ header::before {
 }
 
 .btn-delete-group { font-size: 13px; }
+
+.btn-favorite {
+  font-size: 14px;
+  opacity: 0.35;
+  color: var(--text-2);
+  transition: opacity var(--t) var(--ease), color var(--t) var(--ease), transform 0.15s var(--ease);
+}
+
+.btn-favorite:hover {
+  opacity: 1;
+  color: #d4a53a;
+  background: rgba(212, 165, 58, 0.1);
+  transform: scale(1.15);
+}
+
+.btn-favorite.is-active {
+  opacity: 1;
+  color: #d4a53a;
+  background: none;
+}
 
 /* ═══════════════════════════════════════
    ANIMATIONS

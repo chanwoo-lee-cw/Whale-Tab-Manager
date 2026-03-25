@@ -38,17 +38,17 @@
 - [x] `manifest.json` — `icons` 및 `action.default_icon` 등록
 
 ### 사이드바 강조 효과 (LP-16a)
-- [ ] `.sidebar-item.is-active` CSS 강조 스타일 완성 (accent 색상, 좌측 border, 굵기)
-- [ ] `IntersectionObserver` 콜백에서 활성 그룹 단일 선택 로직 검증 및 정확도 개선
+- [x] `.sidebar-item.is-active` CSS 강조 스타일 완성 (accent 색상, 좌측 border, 굵기)
+- [x] `IntersectionObserver` 콜백에서 활성 그룹 스크롤 연동
 
 ### 즐겨찾기 (LP-17)
-- [ ] `TabGroup` 스키마에 `isFavorite: boolean` 필드 추가 (`src/tab-group.js`)
-- [ ] `toggleFavorite(groupId)` 함수 구현 (`src/tab-group.js` 또는 `src/landing.js`)
-- [ ] 그룹 카드 `.header-actions`에 `.btn-favorite` 버튼 추가 (`renderGroupList`)
-- [ ] 즐겨찾기 상태에 따라 ★/☆ 아이콘 및 accent 스타일 토글
-- [ ] `renderGroupList` 진입 시 즐겨찾기 그룹을 상단으로 정렬
-- [ ] 즐겨찾기 카드에 시각 구분 스타일 추가 (accent border 또는 배지)
-- [ ] 즐겨찾기 상태 영속 저장 및 페이지 재로드 시 복원 확인
+- [x] `TabGroup` 스키마에 `isFavorite: boolean` 필드 추가 (`src/tab-group.js`)
+- [x] `toggleFavorite(groupId)` 함수 구현 (`src/tab-group.js`)
+- [x] 그룹 카드 `.header-actions`에 `.btn-favorite` 버튼 추가 (`renderGroupList`)
+- [x] 즐겨찾기 상태에 따라 ★/☆ 아이콘 및 gold 스타일 토글
+- [x] `renderGroupList` 진입 시 즐겨찾기 그룹을 상단으로 정렬 (`sortGroups`)
+- [x] 즐겨찾기 카드에 시각 구분 스타일 추가 (gold left border, 헤더 그라디언트)
+- [x] 즐겨찾기 상태 영속 저장 및 페이지 재로드 시 복원
 
 ## 테스트 시나리오
 

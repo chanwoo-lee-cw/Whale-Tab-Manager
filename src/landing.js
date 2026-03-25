@@ -61,7 +61,7 @@ function renderSidebar(groups) {
       entries.forEach(entry => {
         const groupId = entry.target.dataset.groupId;
         const sidebarItem = sidebarEl.querySelector(`.sidebar-item[data-group-id="${groupId}"]`);
-        if (sidebarItem) sidebarItem.classList.toggle('is-active', entry.isIntersecting);
+        if (sidebarItem) sidebarItem.classList.toggle('is-active', !entry.isIntersecting);
       });
     },
     { rootMargin: '-10% 0px -70% 0px' }
@@ -180,6 +180,7 @@ function createGroupCardEl(group) {
   card.className = 'group-card';
   card.dataset.groupId = group.id;
   if (_selectedIds.has(group.id)) card.classList.add('is-selected');
+  if (group.isFavorite) card.classList.add('is-favorite');
 
   // 병합 체크박스
   const checkbox = document.createElement('input');
@@ -262,6 +263,17 @@ function createGroupCardEl(group) {
     await refreshGroupList();
   });
 
+  const favoriteBtn = document.createElement('button');
+  favoriteBtn.className = 'btn-icon btn-favorite';
+  favoriteBtn.title = group.isFavorite ? '즐겨찾기 해제' : '즐겨찾기';
+  favoriteBtn.textContent = group.isFavorite ? '★' : '☆';
+  if (group.isFavorite) favoriteBtn.classList.add('is-active');
+  favoriteBtn.addEventListener('click', async () => {
+    await toggleFavorite(group.id);
+    await refreshGroupList();
+  });
+
+  headerActions.appendChild(favoriteBtn);
   headerActions.appendChild(foldBtn);
   headerActions.appendChild(openAllBtn);
   headerActions.appendChild(deleteGroupBtn);
@@ -289,8 +301,17 @@ function createGroupCardEl(group) {
   return card;
 }
 
+function sortGroups(groups) {
+  return [...groups].sort((a, b) => {
+    if (a.isFavorite && !b.isFavorite) return -1;
+    if (!a.isFavorite && b.isFavorite) return 1;
+    return 0;
+  });
+}
+
 function renderGroupList(groups) {
   groupListEl.innerHTML = '';
+  groups = sortGroups(groups);
 
   if (groups.length === 0) {
     emptyStateEl.classList.remove('hidden');
