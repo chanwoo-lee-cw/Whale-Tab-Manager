@@ -69,3 +69,7 @@ async function saveAllTabs(closeAfter) {
   }
   return group;
 }
+
+if (typeof module !== 'undefined') {
+  module.exports = { saveCurrentTab, saveAllTabs, createTabGroup, isUnsaveableUrl };
+}

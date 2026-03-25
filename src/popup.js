@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSaveAllKeep = document.getElementById('btn-save-all-keep');
   const btnSaveAllClose = document.getElementById('btn-save-all-close');
   const btnOpenLanding = document.getElementById('btn-open-landing');
+  const btnOpenSidebar = document.getElementById('btn-open-sidebar');
   const statusEl = document.getElementById('status');
 
   let statusTimer = null;
@@ -64,6 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnOpenLanding.addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('landing.html') });
+    window.close();
+  });
+
+  btnOpenSidebar.addEventListener('click', () => {
+    // whale.sidebarAction은 Whale 전용 API
+    if (typeof whale !== 'undefined' && whale.sidebarAction) {
+      whale.sidebarAction.setPanel({ panel: chrome.runtime.getURL('sidebar.html') });
+      whale.sidebarAction.open();
+    } else {
+      // Whale 미지원 환경 fallback: 새 탭으로 열기
+      chrome.tabs.create({ url: chrome.runtime.getURL('sidebar.html') });
+    }
     window.close();
   });
 });

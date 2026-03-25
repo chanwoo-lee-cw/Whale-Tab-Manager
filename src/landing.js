@@ -1,10 +1,39 @@
 const groupListEl = document.getElementById('group-list');
 const emptyStateEl = document.getElementById('empty-state');
+const mergeBarEl = document.getElementById('merge-bar');
+const mergeCountEl = document.getElementById('merge-count');
+const mergeBtnEl = document.getElementById('merge-btn');
+const searchInputEl = document.getElementById('search-input');
+
+let _allGroups = [];
+const _selectedIds = new Set();
 
 function formatDate(timestamp) {
   const d = new Date(timestamp);
   const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function filterGroups(groups, query) {
+  if (!query || !query.trim()) return groups;
+  const q = query.toLowerCase();
+  return groups
+    .map(group => {
+      if (group.name.toLowerCase().includes(q)) return group;
+      const matchedTabs = group.tabs.filter(
+        t => t.title.toLowerCase().includes(q) || t.url.toLowerCase().includes(q)
+      );
+      return matchedTabs.length > 0 ? { ...group, tabs: matchedTabs } : null;
+    })
+    .filter(Boolean);
+}
+
+function updateMergeBar() {
+  if (!mergeBarEl) return;
+  const count = _selectedIds.size;
+  mergeBarEl.classList.toggle('hidden', count === 0);
+  if (mergeCountEl) mergeCountEl.textContent = `${count}개 그룹 선택됨`;
+  if (mergeBtnEl) mergeBtnEl.disabled = count < 2;
 }
 
 function openTab(url) {
@@ -15,7 +44,7 @@ function openAllTabsInGroup(group) {
   group.tabs.forEach(tab => chrome.tabs.create({ url: tab.url }));
 }
 
-function createFaviconEl(favIconUrl, title) {
+function createFaviconEl(favIconUrl) {
   const img = document.createElement('img');
   img.className = 'tab-favicon';
   img.alt = '';
@@ -34,7 +63,7 @@ function createTabItemEl(tab, groupId) {
   const item = document.createElement('li');
   item.className = 'tab-item';
 
-  const favicon = createFaviconEl(tab.favIconUrl, tab.title);
+  const favicon = createFaviconEl(tab.favIconUrl);
 
   const info = document.createElement('div');
   info.className = 'tab-info';
@@ -71,6 +100,20 @@ function createGroupCardEl(group) {
   const card = document.createElement('div');
   card.className = 'group-card';
   card.dataset.groupId = group.id;
+  if (_selectedIds.has(group.id)) card.classList.add('is-selected');
+
+  // 병합 체크박스
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'group-select';
+  checkbox.title = '병합할 그룹 선택';
+  checkbox.checked = _selectedIds.has(group.id);
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) _selectedIds.add(group.id);
+    else _selectedIds.delete(group.id);
+    card.classList.toggle('is-selected', checkbox.checked);
+    updateMergeBar();
+  });
 
   // Header
   const header = document.createElement('div');
@@ -107,10 +150,7 @@ function createGroupCardEl(group) {
   nameInput.addEventListener('blur', commitRename);
   nameInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') nameInput.blur();
-    if (e.key === 'Escape') {
-      nameInput.value = group.name;
-      nameInput.blur();
-    }
+    if (e.key === 'Escape') { nameInput.value = group.name; nameInput.blur(); }
   });
 
   const metaEl = document.createElement('span');
@@ -131,6 +171,8 @@ function createGroupCardEl(group) {
   deleteGroupBtn.textContent = '🗑';
   deleteGroupBtn.addEventListener('click', async () => {
     if (!confirm(`"${group.name}" 그룹을 삭제하시겠습니까?`)) return;
+    _selectedIds.delete(group.id);
+    updateMergeBar();
     await deleteTabGroup(group.id);
     await refreshGroupList();
   });
@@ -144,6 +186,7 @@ function createGroupCardEl(group) {
   headerLeft.appendChild(nameInput);
   headerLeft.appendChild(metaEl);
 
+  header.appendChild(checkbox);
   header.appendChild(headerLeft);
   header.appendChild(headerActions);
 
@@ -173,8 +216,9 @@ function renderGroupList(groups) {
 
 async function refreshGroupList() {
   try {
-    const groups = await getAllTabGroups();
-    renderGroupList(groups);
+    _allGroups = await getAllTabGroups();
+    const query = searchInputEl ? searchInputEl.value : '';
+    renderGroupList(filterGroups(_allGroups, query));
   } catch (e) {
     console.error('[landing] refreshGroupList failed:', e);
     renderGroupList([]);
@@ -184,12 +228,44 @@ async function refreshGroupList() {
 function bindStorageListener() {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.tabGroups) {
-      renderGroupList(changes.tabGroups.newValue || []);
+      _allGroups = changes.tabGroups.newValue || [];
+      const query = searchInputEl ? searchInputEl.value : '';
+      renderGroupList(filterGroups(_allGroups, query));
     }
   });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await refreshGroupList();
-  bindStorageListener();
-});
+function bindSearchInput() {
+  if (!searchInputEl) return;
+  searchInputEl.addEventListener('input', () => {
+    renderGroupList(filterGroups(_allGroups, searchInputEl.value));
+  });
+}
+
+function bindMergeBar() {
+  if (!mergeBtnEl) return;
+  mergeBtnEl.addEventListener('click', async () => {
+    const ids = [..._selectedIds];
+    if (ids.length < 2) return;
+    const firstName = _allGroups.find(g => g.id === ids[0])?.name || '병합된 그룹';
+    const newName = prompt('병합된 그룹 이름을 입력하세요:', firstName);
+    if (newName === null) return;
+    await mergeTabGroups(ids, newName.trim() || firstName);
+    _selectedIds.clear();
+    updateMergeBar();
+    await refreshGroupList();
+  });
+}
+
+if (typeof document !== 'undefined' && typeof module === 'undefined') {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await refreshGroupList();
+    bindStorageListener();
+    bindSearchInput();
+    bindMergeBar();
+  });
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { renderGroupList, filterGroups, openTab, openAllTabsInGroup, bindStorageListener, refreshGroupList };
+}

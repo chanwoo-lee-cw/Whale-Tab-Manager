@@ -37,3 +37,25 @@ async function deleteTabFromGroup(groupId, tabId) {
     : groups;
   await chrome.storage.local.set({ tabGroups: updated });
 }
+
+async function mergeTabGroups(groupIds, newName) {
+  const groups = await getAllTabGroups();
+  const toMerge = groupIds.map(id => groups.find(g => g.id === id)).filter(Boolean);
+  if (toMerge.length < 2) {
+    console.warn('[tab-group] mergeTabGroups: 병합하려면 그룹이 2개 이상 필요합니다.');
+    return;
+  }
+  const mergedGroup = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    name: newName || toMerge[0].name,
+    createdAt: Date.now(),
+    tabs: toMerge.flatMap(g => g.tabs),
+  };
+  const remaining = groups.filter(g => !groupIds.includes(g.id));
+  remaining.unshift(mergedGroup);
+  await chrome.storage.local.set({ tabGroups: remaining });
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups };
+}
