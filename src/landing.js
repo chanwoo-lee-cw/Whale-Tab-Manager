@@ -60,14 +60,17 @@ function updateFoldAllBtn() {
 
 function toggleFoldGroup(groupId, tabList, foldBtn) {
   const isFolded = _foldedIds.has(groupId);
+  const card = tabList.closest('.group-card');
   if (isFolded) {
     _foldedIds.delete(groupId);
     tabList.classList.remove('is-folded');
+    if (card) card.classList.remove('is-folded');
     foldBtn.textContent = '▾';
     foldBtn.title = '접기';
   } else {
     _foldedIds.add(groupId);
     tabList.classList.add('is-folded');
+    if (card) card.classList.add('is-folded');
     foldBtn.textContent = '▸';
     foldBtn.title = '펼치기';
   }
@@ -81,6 +84,7 @@ function foldAll(fold) {
     const foldBtn = card.querySelector('.btn-fold');
     if (!tabList) return;
     tabList.classList.toggle('is-folded', fold);
+    card.classList.toggle('is-folded', fold);
     if (foldBtn) {
       foldBtn.textContent = fold ? '▸' : '▾';
       foldBtn.title = fold ? '펼치기' : '접기';
@@ -163,6 +167,7 @@ function createGroupCardEl(group) {
   card.dataset.groupId = group.id;
   if (_selectedIds.has(group.id)) card.classList.add('is-selected');
   if (group.isFavorite) card.classList.add('is-favorite');
+  if (_foldedIds.has(group.id)) card.classList.add('is-folded');
 
   // 병합 체크박스
   const checkbox = document.createElement('input');
@@ -180,6 +185,7 @@ function createGroupCardEl(group) {
   // Header
   const header = document.createElement('div');
   header.className = 'group-header';
+  header.dataset.tabCount = `탭 ${group.tabs.length}개`;
 
   const nameEl = document.createElement('span');
   nameEl.className = 'group-name';

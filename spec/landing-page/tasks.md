@@ -42,8 +42,8 @@
 
 
 ### Fold 상태 시각 표시 (LP-18)
-- [ ] `.group-card`에 `.is-folded` 클래스 토글 추가 (`toggleFoldGroup`, `foldAll`)
-- [ ] `.group-card.is-folded` CSS 스타일 추가 (헤더 배경 변화, 하단 점선 또는 요약 뱃지)
+- [x] `.group-card`에 `.is-folded` 클래스 토글 추가 (`toggleFoldGroup`, `foldAll`)
+- [x] `.group-card.is-folded` CSS 스타일 추가 (헤더 배경 변화, 하단 점선, 탭 수 뱃지)
 
 ### 즐겨찾기 (LP-17)
 - [x] `TabGroup` 스키마에 `isFavorite: boolean` 필드 추가 (`src/tab-group.js`)
