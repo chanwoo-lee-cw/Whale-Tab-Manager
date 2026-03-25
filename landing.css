@@ -18,8 +18,8 @@
   --accent-glow:  rgba(181, 91, 38, 0.05);
 
   --text-1:       #1c1916;
-  --text-2:       #6b6560;
-  --text-3:       #a8a29c;
+  --text-2:       #4a4440;
+  --text-3:       #857e78;
 
   --link:         #2a5c8c;
   --link-hover:   #1d4470;
@@ -276,8 +276,8 @@ header::before {
   padding: 7px 10px;
   border-radius: 4px;
   font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--text-2);
+  font-size: 13px;
+  color: var(--text-1);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -477,7 +477,7 @@ header::before {
   margin-top: 4px;
   cursor: pointer;
   accent-color: var(--accent);
-  opacity: 0.4;
+  opacity: 0.6;
   transition: opacity var(--t) var(--ease);
 }
 
@@ -529,8 +529,8 @@ header::before {
 
 .group-meta {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-3);
+  font-size: 12px;
+  color: var(--text-2);
   letter-spacing: 0.03em;
 }
 
@@ -579,7 +579,7 @@ header::before {
 }
 
 .tab-title {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--link);
   cursor: pointer;
@@ -597,7 +597,7 @@ header::before {
 
 .tab-url {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 11px;
   color: var(--text-3);
   white-space: nowrap;
   overflow: hidden;
@@ -640,9 +640,9 @@ header::before {
   font-size: 11px;
   line-height: 1;
   border-radius: 3px;
-  color: var(--text-3);
+  color: var(--text-2);
   flex-shrink: 0;
-  opacity: 0.4;
+  opacity: 0.65;
   transition:
     color var(--t) var(--ease),
     background var(--t) var(--ease),
@@ -659,7 +659,7 @@ header::before {
 
 .btn-favorite {
   font-size: 14px;
-  opacity: 0.35;
+  opacity: 0.65;
   color: var(--text-2);
   transition: opacity var(--t) var(--ease), color var(--t) var(--ease), transform 0.15s var(--ease);
 }
@@ -697,7 +697,7 @@ header::before {
 
 .btn-fold {
   font-size: 12px;
-  opacity: 0.5;
+  opacity: 0.7;
   transition: opacity var(--t) var(--ease), color var(--t) var(--ease), background var(--t) var(--ease);
 }
 
