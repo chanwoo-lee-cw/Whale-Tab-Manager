@@ -180,6 +180,133 @@ header::before {
 .status.success { color: var(--accent); }
 .status.error   { color: var(--danger); }
 
+/* ─── SAVED GROUPS ─── */
+#saved-groups {
+  border-top: 1px solid var(--border);
+  margin: 0 0 4px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.empty-state {
+  padding: 12px 16px;
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.popup-group {
+  border-bottom: 1px solid var(--border);
+}
+
+.popup-group:last-child {
+  border-bottom: none;
+}
+
+.popup-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 8px 4px 12px;
+  gap: 4px;
+}
+
+.popup-group-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.popup-fold-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background var(--t) var(--ease), color var(--t) var(--ease), transform var(--t) var(--ease);
+}
+
+.popup-fold-btn:hover {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+
+.popup-fold-btn svg {
+  transition: transform var(--t) var(--ease);
+}
+
+/* Fold 상태 */
+.popup-group.is-folded .popup-fold-btn svg {
+  transform: rotate(180deg);
+}
+
+.popup-group.is-folded .popup-tab-list {
+  display: none;
+}
+
+.popup-group.is-folded .popup-group-header {
+  padding-bottom: 7px;
+}
+
+.popup-group.is-folded:not(:last-child) {
+  border-bottom-style: dashed;
+}
+
+.popup-tab-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background var(--t) var(--ease);
+}
+
+.popup-tab-item:hover {
+  background: var(--surface-3);
+}
+
+.popup-tab-item:last-child {
+  padding-bottom: 7px;
+}
+
+.popup-tab-favicon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.popup-tab-favicon-placeholder {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.popup-tab-title {
+  font-size: 12px;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
 /* ─── LANDING BUTTON ─── */
 .btn-landing {
   display: flex;
