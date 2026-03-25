@@ -10,7 +10,6 @@ const sidebarEl = document.getElementById('session-sidebar');
 let _allGroups = [];
 const _selectedIds = new Set();
 const _foldedIds = new Set();
-let _sidebarObserver = null;
 
 function formatDate(timestamp) {
   const d = new Date(timestamp);
@@ -36,11 +35,6 @@ function renderSidebar(groups) {
   if (!sidebarEl) return;
   sidebarEl.innerHTML = '';
 
-  if (_sidebarObserver) {
-    _sidebarObserver.disconnect();
-    _sidebarObserver = null;
-  }
-
   if (groups.length === 0) return;
 
   groups.forEach(group => {
@@ -56,18 +50,6 @@ function renderSidebar(groups) {
     sidebarEl.appendChild(item);
   });
 
-  _sidebarObserver = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        const groupId = entry.target.dataset.groupId;
-        const sidebarItem = sidebarEl.querySelector(`.sidebar-item[data-group-id="${groupId}"]`);
-        if (sidebarItem) sidebarItem.classList.toggle('is-active', !entry.isIntersecting);
-      });
-    },
-    { rootMargin: '-10% 0px -70% 0px' }
-  );
-
-  document.querySelectorAll('.group-card').forEach(card => _sidebarObserver.observe(card));
 }
 
 function updateFoldAllBtn() {

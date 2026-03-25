@@ -88,10 +88,6 @@ landing.html
 - `#session-sidebar`를 초기화하고 그룹마다 `.sidebar-item` 요소를 생성
 - 각 `.sidebar-item` 클릭 시 해당 `.group-card[data-group-id]`로 `scrollIntoView({ behavior: 'smooth' })` 호출
 
-### `bindSidebarScroll()`
-- `IntersectionObserver`로 `.group-card` 가시성을 감지
-- 뷰포트에 가장 많이 보이는 그룹의 `data-group-id`에 해당하는 `.sidebar-item`에 `.is-active` 클래스를 부여
-- `.sidebar-item.is-active`: accent 색상 강조, 좌측 2px border, 폰트 굵기 업
 
 ### `toggleFavorite(groupId: string): Promise<void>`
 - 해당 그룹의 `isFavorite` 플래그를 토글 후 storage에 저장

@@ -33,13 +33,13 @@
 - [x] 사이드바 CSS 스타일 추가 (고정 좌측 패널, `.sidebar-item`, `.is-active`)
 - [x] 3-column 균형 레이아웃 적용 (`.page-body` + `.sidebar-spacer`)
 - [x] 헤더 `.brand` / `.header-actions-right` 너비를 사이드바와 동일하게 맞춰 검색창·콘텐츠 수직 정렬
+
+### ~~사이드바 강조 효과 (LP-16a) — 취소~~
+- ~~사이드바 활성 항목 강조 기능은 사용자 요청으로 제거~~
 - [x] `popup.html` / `popup.css` — 랜딩 페이지와 동일한 디자인 시스템 적용
 - [x] `icons/icon.svg` 브랜드마크 SVG 생성 및 PNG 4종(16·32·48·128px) export
 - [x] `manifest.json` — `icons` 및 `action.default_icon` 등록
 
-### 사이드바 강조 효과 (LP-16a)
-- [x] `.sidebar-item.is-active` CSS 강조 스타일 완성 (accent 색상, 좌측 border, 굵기)
-- [x] `IntersectionObserver` 콜백에서 활성 그룹 스크롤 연동
 
 ### 즐겨찾기 (LP-17)
 - [x] `TabGroup` 스키마에 `isFavorite: boolean` 필드 추가 (`src/tab-group.js`)
