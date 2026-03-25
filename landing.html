@@ -2,25 +2,60 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>저장된 탭 관리 - Whale Tab Manager</title>
+  <title>Tab Archive — Whale Tab Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="landing.css">
 </head>
 <body>
+  <div class="grain" aria-hidden="true"></div>
+
   <header>
-    <h1>저장된 탭 관리</h1>
-    <input id="search-input" type="search" placeholder="탭 제목, URL, 그룹 이름 검색…" autocomplete="off">
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="brand-mark" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="13,2 24,8 24,18 13,24 2,18 2,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <polygon points="13,7 19,10.5 19,15.5 13,19 7,15.5 7,10.5" fill="currentColor" opacity="0.3"/>
+        </svg>
+        <div class="brand-text">
+          <h1>Tab Archive</h1>
+          <span class="brand-sub">Whale Tab Manager</span>
+        </div>
+      </div>
+      <div class="search-wrapper">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input id="search-input" type="search" placeholder="탭 제목, URL, 그룹 이름 검색…" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
   </header>
 
   <main>
     <div id="merge-bar" class="hidden">
-      <span id="merge-count"></span>
-      <button id="merge-btn" disabled>병합</button>
+      <div class="merge-bar-inner">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M8 6H21M8 12H21M8 18H21M3 6h.01M3 12h.01M3 18h.01"/>
+        </svg>
+        <span id="merge-count"></span>
+        <button id="merge-btn" disabled>병합 실행</button>
+      </div>
     </div>
 
     <div id="empty-state" class="hidden">
-      <p>저장된 탭이 없습니다.</p>
-      <p class="empty-sub">팝업에서 탭을 저장하면 여기에 표시됩니다.</p>
+      <div class="empty-icon" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="10" width="36" height="28" rx="3"/>
+          <path d="M6 16h36"/>
+          <path d="M14 10V6M34 10V6"/>
+          <path d="M14 24h12M14 30h8"/>
+        </svg>
+      </div>
+      <p>보관된 탭이 없습니다</p>
+      <p class="empty-sub">팝업에서 탭을 저장하면 이곳에 아카이브됩니다.</p>
     </div>
+
     <ul id="group-list" class="hidden"></ul>
   </main>
 

@@ -69,14 +69,8 @@ button:disabled {
   color: #e03030;
 }
 
-.btn-group-bottom {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
 .btn-landing {
+  margin-top: 10px;
   background: #03c75a;
   color: #fff;
   border-color: #03c75a;
@@ -86,16 +80,4 @@ button:disabled {
 
 .btn-landing:hover:not(:disabled) {
   background: #02b350;
-}
-
-.btn-sidebar {
-  background: #f0faf5;
-  color: #03c75a;
-  border-color: #b2e8cc;
-  text-align: center;
-  font-weight: 500;
-}
-
-.btn-sidebar:hover:not(:disabled) {
-  background: #e0f5ea;
 }
