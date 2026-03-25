@@ -9,34 +9,45 @@
 ```
 landing.html
 ├── <header>
-│   ├── #search-input        — 검색어 입력 필드
-│   ├── #btn-fold-all        — 모두 접기 / 모두 펼치기 토글 버튼
-│   └── #btn-add-session     — 새 세션 추가 버튼
-├── <div.content-layout>     — 사이드바 + 메인 2단 레이아웃
-│   ├── <nav#session-sidebar>  — 세션 이름 빠른 이동 사이드바
-│   │   └── .sidebar-item (그룹마다 반복)  — 클릭 시 해당 그룹으로 스크롤
-│   │       └── .is-active   — 현재 뷰포트에 보이는 그룹
-│   └── <main>
-│       ├── #merge-bar         — 그룹 선택 시 표시되는 병합 액션 바
-│       │   ├── .merge-count   — 선택된 그룹 수
-│       │   └── [병합 버튼]
-│       ├── #group-list        — 그룹 목록 컨테이너
-│       │   └── .group-card (그룹마다 반복)
-│       │       ├── .group-select  — 병합용 체크박스
-│       │       ├── .group-header
-│       │       │   ├── .group-name (인라인 편집 가능)
-│       │       │   ├── .group-meta (탭 수, 저장 시각)
-│       │       │   ├── [Fold 버튼]  — 개별 그룹 접기/펼치기 토글
-│       │       │   ├── [그룹 전체 열기 버튼]
-│       │       │   └── [그룹 삭제 버튼]
-│       │       └── .tab-list  — .is-folded 클래스로 접힘 상태 표현
-│       │           └── .tab-item (탭마다 반복)
-│       │               ├── <img> favicon
-│       │               ├── .tab-title (클릭 시 URL 오픈)
-│       │               ├── .tab-url
-│       │               └── [탭 삭제 버튼]
-│       └── #empty-state       — 그룹이 없을 때 표시
+│   └── .header-inner (max-width 제한, 중앙 정렬)
+│       ├── .brand [200px]       — 로고 + 타이틀
+│       ├── .search-wrapper      — #search-input 검색 필드
+│       └── .header-actions-right [200px]
+│           ├── #btn-add-session — 새 세션 추가 버튼
+│           └── #btn-fold-all    — 세션 전부 접기 / 펼치기 토글
+└── <div.page-body>              — 3-column 중앙 정렬 레이아웃
+    ├── <nav#session-sidebar> [200px, sticky]
+    │   └── .sidebar-item (그룹마다 반복)
+    │       └── .is-active       — 현재 뷰포트에 보이는 그룹
+    ├── <div.content-layout> [flex:1, max-width:720px]
+    │   ├── #merge-bar           — 그룹 선택 시 표시되는 병합 액션 바
+    │   │   ├── #merge-count     — 선택된 그룹 수
+    │   │   └── #merge-btn       — 병합 실행 버튼
+    │   ├── #empty-state         — 그룹이 없을 때 표시
+    │   └── #group-list
+    │       └── .group-card (그룹마다 반복)
+    │           ├── .group-select    — 병합용 체크박스
+    │           ├── .group-header
+    │           │   ├── .header-left
+    │           │   │   ├── .group-name     (인라인 편집 가능)
+    │           │   │   ├── .group-name-input (편집 중 표시)
+    │           │   │   └── .group-meta     (탭 수, 저장 시각)
+    │           │   └── .header-actions
+    │           │       ├── .btn-favorite   — 즐겨찾기 토글 (★/☆)
+    │           │       ├── .btn-fold       — 개별 Fold 토글
+    │           │       ├── .btn-text       — 전체 열기
+    │           │       └── .btn-delete-group
+    │           └── .tab-list (.is-folded 시 숨김)
+    │               └── .tab-item
+    │                   ├── .tab-favicon
+    │                   ├── .tab-info (.tab-title / .tab-url)
+    │                   └── .btn-delete-tab
+    └── <div.sidebar-spacer> [200px]  — 우측 균형 스페이서 (빈 요소)
 ```
+
+### 레이아웃 규칙
+- `#session-sidebar`가 비어 있으면 `.sidebar-spacer`도 함께 숨겨 콘텐츠가 정중앙에 위치한다
+- `.header-inner`의 `.brand`(200px)·`header-actions-right`(200px)·gap(24px)이 `.page-body`의 사이드바·스페이서·gap과 대칭을 이뤄 검색창과 콘텐츠가 수직 정렬된다
 
 ## 주요 함수 (`src/landing.js`)
 
@@ -80,6 +91,16 @@ landing.html
 ### `bindSidebarScroll()`
 - `IntersectionObserver`로 `.group-card` 가시성을 감지
 - 뷰포트에 가장 많이 보이는 그룹의 `data-group-id`에 해당하는 `.sidebar-item`에 `.is-active` 클래스를 부여
+- `.sidebar-item.is-active`: accent 색상 강조, 좌측 2px border, 폰트 굵기 업
+
+### `toggleFavorite(groupId: string): Promise<void>`
+- 해당 그룹의 `isFavorite` 플래그를 토글 후 storage에 저장
+- 그룹 카드 헤더의 `.btn-favorite` 아이콘을 ★(활성) / ☆(비활성)으로 전환
+- `refreshGroupList` 호출 → 즐겨찾기 그룹이 목록 상단으로 이동
+
+### 즐겨찾기 정렬 규칙
+- `renderGroupList` 진입 시 `isFavorite === true`인 그룹을 앞으로, 나머지를 `createdAt` 내림차순으로 정렬
+- 즐겨찾기 그룹은 카드 상단에 `★` 배지 또는 accent border로 시각 구분
 
 ## 에러 처리
 - 저장된 데이터가 없거나 파싱 실패 시 `#empty-state` 표시
