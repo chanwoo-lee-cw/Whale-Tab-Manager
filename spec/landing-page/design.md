@@ -9,26 +9,28 @@
 ```
 landing.html
 ├── <header>
-│   └── #search-input    — 검색어 입력 필드
+│   ├── #search-input      — 검색어 입력 필드
+│   └── #btn-fold-all      — 모두 접기 / 모두 펼치기 토글 버튼
 ├── <main>
-│   ├── #merge-bar       — 그룹 선택 시 표시되는 병합 액션 바
-│   │   ├── .merge-count — 선택된 그룹 수
+│   ├── #merge-bar         — 그룹 선택 시 표시되는 병합 액션 바
+│   │   ├── .merge-count   — 선택된 그룹 수
 │   │   └── [병합 버튼]
-│   ├── #group-list      — 그룹 목록 컨테이너
+│   ├── #group-list        — 그룹 목록 컨테이너
 │   │   └── .group-card (그룹마다 반복)
 │   │       ├── .group-select  — 병합용 체크박스
 │   │       ├── .group-header
 │   │       │   ├── .group-name (인라인 편집 가능)
 │   │       │   ├── .group-meta (탭 수, 저장 시각)
+│   │       │   ├── [Fold 버튼]  — 개별 그룹 접기/펼치기 토글
 │   │       │   ├── [그룹 전체 열기 버튼]
 │   │       │   └── [그룹 삭제 버튼]
-│   │       └── .tab-list
+│   │       └── .tab-list  — .is-folded 클래스로 접힘 상태 표현
 │   │           └── .tab-item (탭마다 반복)
 │   │               ├── <img> favicon
 │   │               ├── .tab-title (클릭 시 URL 오픈)
 │   │               ├── .tab-url
 │   │               └── [탭 삭제 버튼]
-└── #empty-state         — 그룹이 없을 때 표시
+└── #empty-state           — 그룹이 없을 때 표시
 ```
 
 ## 주요 함수 (`src/landing.js`)
@@ -53,6 +55,14 @@ landing.html
 ### `mergeTabGroups(groupIds: string[], newName: string): Promise<void>`
 - 선택된 그룹들의 탭을 순서대로 합쳐 새 그룹 생성
 - 기존 그룹들을 storage에서 제거 후 새 그룹 추가
+
+### `toggleFoldGroup(groupId: string)`
+- 특정 그룹 카드의 `.tab-list`에 `.is-folded` 클래스를 토글
+- Fold 버튼 아이콘/텍스트를 접힘 상태에 맞게 업데이트
+
+### `foldAll(fold: boolean)`
+- `fold`가 `true`이면 모든 `.tab-list`에 `.is-folded` 추가, `false`이면 제거
+- `#btn-fold-all` 버튼 레이블을 현재 상태에 맞게 전환 ("모두 접기" ↔ "모두 펼치기")
 
 ## 에러 처리
 - 저장된 데이터가 없거나 파싱 실패 시 `#empty-state` 표시
