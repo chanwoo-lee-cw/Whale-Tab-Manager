@@ -104,6 +104,25 @@ landing.html
 - `renderGroupList` 진입 시 `isFavorite === true`인 그룹을 앞으로, 나머지를 `createdAt` 내림차순으로 정렬
 - 즐겨찾기 그룹은 카드 상단에 `★` 배지 또는 accent border로 시각 구분
 
+### 드래그 앤 드롭 (LP-19)
+
+#### UI 구조
+- `.tab-item`에 `draggable="true"` 속성 추가
+- 드래그 중: `.tab-item.is-dragging` (반투명 처리)
+- 드롭 대상 위: `.tab-item.drag-over` 또는 `.tab-list.drag-over` (구분선 표시)
+
+#### 이벤트 흐름
+- `dragstart` → 드래그 대상 `groupId` · `tabId` · `tabIndex`를 `dataTransfer`에 저장
+- `dragover` → 기본 동작 방지 + 드롭 위치 표시
+- `drop` → `moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex)` 호출 후 `refreshGroupList`
+- `dragend` → 드래그 상태 클래스 정리
+
+#### `moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex): Promise<void>`
+- `srcGroupId`에서 해당 탭을 제거하고 `dstGroupId`의 `dstIndex` 위치에 삽입
+- 같은 그룹 내 이동이면 순서만 변경
+- 변경된 groups 배열을 `chrome.storage.local.set`으로 저장
+- `srcGroup`의 탭이 0개가 되어도 그룹은 삭제하지 않음
+
 ## 에러 처리
 - 저장된 데이터가 없거나 파싱 실패 시 `#empty-state` 표시
 - URL 열기 실패 시 콘솔 에러 출력
