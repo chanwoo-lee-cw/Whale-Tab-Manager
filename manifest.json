@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Whale Tab Manager",
+  "version": "1.0.0",
+  "description": "현재 열려 있는 탭을 그룹 단위로 저장하고 관리합니다.",
+  "permissions": ["tabs", "storage", "activeTab"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "탭 관리자"
+  },
+  "options_page": "landing.html"
+}
