@@ -8,22 +8,27 @@
 
 ```
 landing.html
-├── <header>         — 앱 제목
+├── <header>
+│   └── #search-input    — 검색어 입력 필드
 ├── <main>
-│   └── #group-list  — 그룹 목록 컨테이너
-│       └── .group-card (그룹마다 반복)
-│           ├── .group-header
-│           │   ├── .group-name (인라인 편집 가능)
-│           │   ├── .group-meta (탭 수, 저장 시각)
-│           │   ├── [그룹 전체 열기 버튼]
-│           │   └── [그룹 삭제 버튼]
-│           └── .tab-list
-│               └── .tab-item (탭마다 반복)
-│                   ├── <img> favicon
-│                   ├── .tab-title (클릭 시 URL 오픈)
-│                   ├── .tab-url
-│                   └── [탭 삭제 버튼]
-└── #empty-state     — 그룹이 없을 때 표시
+│   ├── #merge-bar       — 그룹 선택 시 표시되는 병합 액션 바
+│   │   ├── .merge-count — 선택된 그룹 수
+│   │   └── [병합 버튼]
+│   ├── #group-list      — 그룹 목록 컨테이너
+│   │   └── .group-card (그룹마다 반복)
+│   │       ├── .group-select  — 병합용 체크박스
+│   │       ├── .group-header
+│   │       │   ├── .group-name (인라인 편집 가능)
+│   │       │   ├── .group-meta (탭 수, 저장 시각)
+│   │       │   ├── [그룹 전체 열기 버튼]
+│   │       │   └── [그룹 삭제 버튼]
+│   │       └── .tab-list
+│   │           └── .tab-item (탭마다 반복)
+│   │               ├── <img> favicon
+│   │               ├── .tab-title (클릭 시 URL 오픈)
+│   │               ├── .tab-url
+│   │               └── [탭 삭제 버튼]
+└── #empty-state         — 그룹이 없을 때 표시
 ```
 
 ## 주요 함수 (`src/landing.js`)
@@ -40,6 +45,16 @@ landing.html
 ### `bindStorageListener()`
 - `chrome.storage.onChanged.addListener`로 storage 변경 감지 후 `renderGroupList` 재호출
 
+### `filterGroups(groups: TabGroup[], query: string): TabGroup[]`
+- `query`를 소문자로 정규화 후, 그룹 이름·탭 title·탭 url 중 하나라도 포함하면 해당 그룹을 반환
+- query가 빈 문자열이면 전체 그룹 반환
+- 탭 단위 필터링: 그룹 내 매칭된 탭만 포함한 부분 그룹 객체를 반환
+
+### `mergeTabGroups(groupIds: string[], newName: string): Promise<void>`
+- 선택된 그룹들의 탭을 순서대로 합쳐 새 그룹 생성
+- 기존 그룹들을 storage에서 제거 후 새 그룹 추가
+
 ## 에러 처리
 - 저장된 데이터가 없거나 파싱 실패 시 `#empty-state` 표시
 - URL 열기 실패 시 콘솔 에러 출력
+- 병합 대상 그룹이 1개 이하이면 병합 실행 불가 (버튼 비활성화)
