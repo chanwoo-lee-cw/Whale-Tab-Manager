@@ -4,9 +4,21 @@
   "version": "1.0.0",
   "description": "현재 열려 있는 탭을 그룹 단위로 저장하고 관리합니다.",
   "permissions": ["tabs", "storage", "activeTab"],
+  "icons": {
+    "16":  "icons/icon16.png",
+    "32":  "icons/icon32.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "탭 관리자"
+    "default_title": "Tab Archive",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "32":  "icons/icon32.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "options_page": "landing.html"
 }

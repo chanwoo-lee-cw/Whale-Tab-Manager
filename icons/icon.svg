@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- 배경 -->
+  <rect width="128" height="128" rx="28" fill="#b55b26"/>
+  <!-- 흰 헥사곤 (테두리 역할) -->
+  <polygon
+    points="64,12 110,38 110,90 64,116 18,90 18,38"
+    fill="white"/>
+  <!-- 액센트 헥사곤 (배경색으로 안쪽 파냄) -->
+  <polygon
+    points="64,30 96,48 96,80 64,98 32,80 32,48"
+    fill="#b55b26"/>
+  <!-- 중심 흰 점 -->
+  <circle cx="64" cy="64" r="10" fill="white" opacity="0.7"/>
+</svg>

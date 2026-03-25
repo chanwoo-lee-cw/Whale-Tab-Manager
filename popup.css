@@ -1,83 +1,205 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;500;600&display=swap');
+
+/* ─── 디자인 토큰 (landing.css와 동일) ─── */
+:root {
+  --bg:           #f2ede5;
+  --surface:      #ffffff;
+  --surface-2:    #faf8f4;
+  --surface-3:    #f4f0e8;
+  --border:       #e4ddd2;
+  --border-2:     #d6cfc3;
+
+  --accent:       #b55b26;
+  --accent-light: #c9692f;
+  --accent-dim:   rgba(181, 91, 38, 0.08);
+
+  --text-1:       #1c1916;
+  --text-2:       #6b6560;
+  --text-3:       #a8a29c;
+
+  --danger:       #b83030;
+  --danger-dim:   rgba(184, 48, 48, 0.08);
+  --danger-border: rgba(184, 48, 48, 0.2);
+
+  --font-serif: 'Nanum Myeongjo', Georgia, serif;
+  --font-ui:    'Noto Sans KR', system-ui, sans-serif;
+
+  --r:    5px;
+  --t:    0.15s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── RESET ─── */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  width: 272px;
+  background: var(--bg);
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── GRAIN ─── */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ─── HEADER ─── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+
+header::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, rgba(181, 91, 38, 0.3) 60%, transparent 100%);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+}
+
+.brand-mark {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.brand-title {
+  display: block;
+  font-family: var(--font-serif);
   font-size: 14px;
-  width: 220px;
-  padding: 16px;
-  background: #ffffff;
-  color: #1a1a1a;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-h1 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 14px;
-  color: #03c75a;
+.brand-sub {
+  display: block;
+  font-size: 9px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
 }
 
+/* ─── ACTIONS ─── */
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  padding: 12px 12px 8px;
 }
 
-.actions hr {
-  border: none;
-  border-top: 1px solid #ebebeb;
-  margin: 2px 0;
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
 }
 
-button {
+.btn-action {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  background: #f7f7f7;
-  color: #1a1a1a;
-  font-size: 13px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--text-1);
   text-align: left;
-  transition: background 0.15s;
+  cursor: pointer;
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease);
 }
 
-button:hover:not(:disabled) {
-  background: #efefef;
+.btn-action svg {
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: color var(--t) var(--ease);
 }
 
-button:disabled {
-  opacity: 0.5;
+.btn-action:hover:not(:disabled) {
+  background: var(--surface-3);
+  border-color: var(--border-2);
+}
+
+.btn-action:hover:not(:disabled) svg {
+  color: var(--accent);
+}
+
+.btn-action.btn-danger {
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+.btn-action.btn-danger svg {
+  color: var(--danger);
+  opacity: 0.7;
+}
+
+.btn-action.btn-danger:hover:not(:disabled) {
+  background: var(--danger-dim);
+  border-color: var(--danger);
+}
+
+.btn-action:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
+/* ─── STATUS ─── */
 .status {
-  min-height: 18px;
-  margin-top: 10px;
-  font-size: 12px;
+  min-height: 16px;
+  padding: 0 16px 2px;
+  font-size: 11px;
   text-align: center;
+  color: var(--text-3);
 }
 
-.status.success {
-  color: #03c75a;
-}
+.status.success { color: var(--accent); }
+.status.error   { color: var(--danger); }
 
-.status.error {
-  color: #e03030;
-}
-
+/* ─── LANDING BUTTON ─── */
 .btn-landing {
-  margin-top: 10px;
-  background: #03c75a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: calc(100% - 24px);
+  margin: 4px 12px 12px;
+  padding: 9px 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
   color: #fff;
-  border-color: #03c75a;
-  text-align: center;
-  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--t) var(--ease);
 }
 
-.btn-landing:hover:not(:disabled) {
-  background: #02b350;
+.btn-landing:hover {
+  background: var(--accent-light);
 }
