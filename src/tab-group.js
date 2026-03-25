@@ -67,6 +67,25 @@ async function toggleFavorite(groupId) {
   await chrome.storage.local.set({ tabGroups: groups });
 }
 
+async function moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex) {
+  const groups = await getAllTabGroups();
+  const srcGroup = groups.find(g => g.id === srcGroupId);
+  const dstGroup = groups.find(g => g.id === dstGroupId);
+  if (!srcGroup || !dstGroup) {
+    console.warn('[tab-group] moveTabToGroup: 그룹을 찾을 수 없습니다.');
+    return;
+  }
+  const tab = srcGroup.tabs.find(t => t.id === tabId);
+  if (!tab) {
+    console.warn('[tab-group] moveTabToGroup: 탭을 찾을 수 없습니다.');
+    return;
+  }
+  srcGroup.tabs = srcGroup.tabs.filter(t => t.id !== tabId);
+  const clampedIndex = Math.min(dstIndex, dstGroup.tabs.length);
+  dstGroup.tabs.splice(clampedIndex, 0, tab);
+  await chrome.storage.local.set({ tabGroups: groups });
+}
+
 async function addEmptySession(name) {
   const groups = await getAllTabGroups();
   const newGroup = {
@@ -80,5 +99,5 @@ async function addEmptySession(name) {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite };
+  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite, moveTabToGroup };
 }

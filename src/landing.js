@@ -127,6 +127,40 @@ function createFaviconEl(favIconUrl) {
 function createTabItemEl(tab, groupId) {
   const item = document.createElement('li');
   item.className = 'tab-item';
+  item.draggable = true;
+  item.dataset.tabId = tab.id;
+  item.dataset.groupId = groupId;
+
+  item.addEventListener('dragstart', e => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', JSON.stringify({ tabId: tab.id, srcGroupId: groupId }));
+    item.classList.add('is-dragging');
+  });
+
+  item.addEventListener('dragend', () => {
+    item.classList.remove('is-dragging');
+    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  });
+
+  item.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.tab-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+    item.classList.add('drag-over');
+  });
+
+  item.addEventListener('drop', async e => {
+    e.preventDefault();
+    item.classList.remove('drag-over');
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (data.tabId === tab.id) return;
+    const dstGroupId = groupId;
+    const dstTabList = item.closest('.tab-list');
+    const items = [...dstTabList.querySelectorAll('.tab-item')];
+    const dstIndex = items.indexOf(item);
+    await moveTabToGroup(data.srcGroupId, data.tabId, dstGroupId, dstIndex);
+    await refreshGroupList();
+  });
 
   const favicon = createFaviconEl(tab.favIconUrl);
 
@@ -186,6 +220,24 @@ function createGroupCardEl(group) {
   const header = document.createElement('div');
   header.className = 'group-header';
   header.dataset.tabCount = `탭 ${group.tabs.length}개`;
+
+  // 빈 그룹 헤더에 드롭 허용 (LP-19a)
+  header.addEventListener('dragover', e => {
+    if (group.tabs.length > 0) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    header.classList.add('drag-over');
+  });
+  header.addEventListener('dragleave', () => header.classList.remove('drag-over'));
+  header.addEventListener('drop', async e => {
+    header.classList.remove('drag-over');
+    if (group.tabs.length > 0) return;
+    e.preventDefault();
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (!data.tabId) return;
+    await moveTabToGroup(data.srcGroupId, data.tabId, group.id, 0);
+    await refreshGroupList();
+  });
 
   const nameEl = document.createElement('span');
   nameEl.className = 'group-name';
@@ -281,6 +333,27 @@ function createGroupCardEl(group) {
   tabList.className = 'tab-list';
   if (_foldedIds.has(group.id)) tabList.classList.add('is-folded');
   group.tabs.forEach(tab => tabList.appendChild(createTabItemEl(tab, group.id)));
+
+  // 빈 그룹 또는 탭 사이 빈 공간에 드롭 허용
+  tabList.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    tabList.classList.add('drag-over');
+  });
+  tabList.addEventListener('dragleave', e => {
+    if (!tabList.contains(e.relatedTarget)) tabList.classList.remove('drag-over');
+  });
+  tabList.addEventListener('drop', async e => {
+    e.preventDefault();
+    tabList.classList.remove('drag-over');
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const dstGroupId = group.id;
+    const dstIndex = tabList.querySelectorAll('.tab-item').length;
+    if (data.tabId && (data.srcGroupId !== dstGroupId || dstIndex !== tabList.querySelectorAll('.tab-item').length)) {
+      await moveTabToGroup(data.srcGroupId, data.tabId, dstGroupId, dstIndex);
+      await refreshGroupList();
+    }
+  });
 
   foldBtn.addEventListener('click', () => toggleFoldGroup(group.id, tabList, foldBtn));
 

@@ -46,11 +46,11 @@
 - [x] `.group-card.is-folded` CSS 스타일 추가 (헤더 배경 변화, 하단 점선, 탭 수 뱃지)
 
 ### 드래그 앤 드롭 (LP-19)
-- [ ] `moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex)` 함수 구현 (`src/tab-group.js`)
-- [ ] `.tab-item`에 `draggable="true"` 속성 및 drag 이벤트 핸들러 추가 (`createTabItemEl`)
-- [ ] `.tab-list`에 `dragover` / `drop` 이벤트 핸들러 추가 (그룹 간 이동)
-- [ ] 드래그 중 `.is-dragging` 클래스, 드롭 위치 `.drag-over` 표시 CSS 추가
-- [ ] 드롭 후 `refreshGroupList` 호출로 storage 즉시 반영
+- [x] `moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex)` 함수 구현 (`src/tab-group.js`)
+- [x] `.tab-item`에 `draggable="true"` 속성 및 drag 이벤트 핸들러 추가 (`createTabItemEl`)
+- [x] `.tab-list`에 `dragover` / `drop` 이벤트 핸들러 추가 (그룹 간 이동)
+- [x] 드래그 중 `.is-dragging` 클래스, 드롭 위치 `.drag-over` 표시 CSS 추가
+- [x] 드롭 후 `refreshGroupList` 호출로 storage 즉시 반영
 
 ### 즐겨찾기 (LP-17)
 - [x] `TabGroup` 스키마에 `isFavorite: boolean` 필드 추가 (`src/tab-group.js`)

@@ -678,6 +678,39 @@ header::before {
 }
 
 /* ═══════════════════════════════════════
+   DRAG AND DROP
+═══════════════════════════════════════ */
+.tab-item[draggable="true"] {
+  cursor: grab;
+}
+
+.tab-item[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.tab-item.is-dragging {
+  opacity: 0.4;
+  background: var(--surface-3);
+}
+
+.tab-item.drag-over {
+  border-top: 2px solid var(--accent);
+  background: var(--accent-dim);
+}
+
+.tab-list.drag-over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+  background: var(--accent-glow);
+}
+
+.group-header.drag-over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+  background: var(--accent-dim);
+}
+
+/* ═══════════════════════════════════════
    ANIMATIONS
 ═══════════════════════════════════════ */
 @keyframes fadeUp {
