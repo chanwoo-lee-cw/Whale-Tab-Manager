@@ -75,6 +75,12 @@ landing.html
 ### `toggleFoldGroup(groupId: string)`
 - 특정 그룹 카드의 `.tab-list`에 `.is-folded` 클래스를 토글
 - Fold 버튼 아이콘/텍스트를 접힘 상태에 맞게 업데이트
+- `.group-card`에 `.is-folded` 클래스를 함께 토글하여 카드 자체에 Fold 상태 표시 적용
+
+### Fold 상태 시각 표시 규칙 (LP-18)
+- `.group-card.is-folded`: 하단 보더를 점선으로 변경하거나 카드 하단에 탭 수 요약 뱃지 표시
+- `.group-card.is-folded .group-header`: 약간 어두운 배경으로 "닫힘" 느낌 강조
+- 목표: 탭 목록 없이도 카드만 봐도 Fold 상태임을 즉시 인식 가능
 
 ### `foldAll(fold: boolean)`
 - `fold`가 `true`이면 모든 `.tab-list`에 `.is-folded` 추가, `false`이면 제거
