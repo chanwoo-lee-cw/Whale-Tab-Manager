@@ -3,7 +3,10 @@
   "name": "Whale Tab Manager",
   "version": "1.0.0",
   "description": "현재 열려 있는 탭을 그룹 단위로 저장하고 관리합니다.",
-  "permissions": ["tabs", "storage", "activeTab"],
+  "permissions": ["tabs", "storage", "activeTab", "notifications", "alarms"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
   "icons": {
     "16":  "icons/icon16.png",
     "32":  "icons/icon32.png",

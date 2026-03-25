@@ -195,6 +195,104 @@ function createTabItemEl(tab, groupId) {
   return item;
 }
 
+function createTtlPanel(group) {
+  const panel = document.createElement('div');
+  panel.className = 'ttl-panel hidden';
+
+  const typeRow = document.createElement('div');
+  typeRow.className = 'ttl-type-row';
+
+  const durationLabel = document.createElement('label');
+  durationLabel.className = 'ttl-radio-label';
+  const durationRadio = document.createElement('input');
+  durationRadio.type = 'radio';
+  durationRadio.name = `ttl-type-${group.id}`;
+  durationRadio.value = 'duration';
+  durationRadio.checked = true;
+  durationLabel.append(durationRadio, ' 시간 후');
+
+  const dateLabel = document.createElement('label');
+  dateLabel.className = 'ttl-radio-label';
+  const dateRadio = document.createElement('input');
+  dateRadio.type = 'radio';
+  dateRadio.name = `ttl-type-${group.id}`;
+  dateRadio.value = 'date';
+  dateLabel.append(dateRadio, ' 날짜 지정');
+
+  typeRow.append(durationLabel, dateLabel);
+
+  const durationRow = document.createElement('div');
+  durationRow.className = 'ttl-input-row';
+  const hoursInput = document.createElement('input');
+  hoursInput.type = 'number';
+  hoursInput.min = '1';
+  hoursInput.value = '24';
+  hoursInput.className = 'ttl-hours-input';
+  const hoursLabel = document.createElement('span');
+  hoursLabel.className = 'ttl-input-label';
+  hoursLabel.textContent = '시간 후 만료';
+  durationRow.append(hoursInput, hoursLabel);
+
+  const dateRow = document.createElement('div');
+  dateRow.className = 'ttl-input-row hidden';
+  const dateInput = document.createElement('input');
+  dateInput.type = 'date';
+  dateInput.className = 'ttl-date-input';
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  dateInput.value = tomorrow.toISOString().slice(0, 10);
+  dateInput.min = new Date().toISOString().slice(0, 10);
+  const dateInputLabel = document.createElement('span');
+  dateInputLabel.className = 'ttl-input-label';
+  dateInputLabel.textContent = '에 만료';
+  dateRow.append(dateInput, dateInputLabel);
+
+  const actionsRow = document.createElement('div');
+  actionsRow.className = 'ttl-actions';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-ttl-save';
+  saveBtn.textContent = '저장';
+  actionsRow.appendChild(saveBtn);
+
+  if (group.expiresAt) {
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-ttl-remove';
+    removeBtn.textContent = 'TTL 제거';
+    removeBtn.addEventListener('click', async () => {
+      await setTabGroupTTL(group.id, null);
+      await refreshGroupList();
+    });
+    actionsRow.appendChild(removeBtn);
+  }
+
+  panel.append(typeRow, durationRow, dateRow, actionsRow);
+
+  durationRadio.addEventListener('change', () => {
+    durationRow.classList.remove('hidden');
+    dateRow.classList.add('hidden');
+  });
+  dateRadio.addEventListener('change', () => {
+    durationRow.classList.add('hidden');
+    dateRow.classList.remove('hidden');
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    if (durationRadio.checked) {
+      const hours = parseInt(hoursInput.value, 10);
+      if (!hours || hours < 1) return;
+      await setTabGroupTTL(group.id, { type: 'duration', hours });
+    } else {
+      const date = dateInput.value;
+      if (!date) return;
+      await setTabGroupTTL(group.id, { type: 'date', date });
+    }
+    await refreshGroupList();
+  });
+
+  return panel;
+}
+
 function createGroupCardEl(group) {
   const card = document.createElement('div');
   card.className = 'group-card';
@@ -277,6 +375,14 @@ function createGroupCardEl(group) {
   metaEl.className = 'group-meta';
   metaEl.textContent = `${group.tabs.length}개 탭 · ${formatDate(group.createdAt)}`;
 
+  let expiryBadge = null;
+  if (group.expiresAt) {
+    expiryBadge = document.createElement('span');
+    const isExpiringSoon = (group.expiresAt - Date.now()) <= 24 * 60 * 60 * 1000;
+    expiryBadge.className = 'ttl-expiry-badge' + (isExpiringSoon ? ' is-soon' : '');
+    expiryBadge.textContent = `⏱ ${formatDate(group.expiresAt)} 만료`;
+  }
+
   const headerActions = document.createElement('div');
   headerActions.className = 'header-actions';
 
@@ -313,7 +419,19 @@ function createGroupCardEl(group) {
     await refreshGroupList();
   });
 
+  const ttlPanel = createTtlPanel(group);
+
+  const ttlBtn = document.createElement('button');
+  ttlBtn.className = 'btn-icon btn-ttl' + (group.expiresAt ? ' is-active' : '');
+  ttlBtn.title = 'TTL 설정';
+  ttlBtn.textContent = '⏱';
+  ttlBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    ttlPanel.classList.toggle('hidden');
+  });
+
   headerActions.appendChild(favoriteBtn);
+  headerActions.appendChild(ttlBtn);
   headerActions.appendChild(foldBtn);
   headerActions.appendChild(openAllBtn);
   headerActions.appendChild(deleteGroupBtn);
@@ -323,6 +441,7 @@ function createGroupCardEl(group) {
   headerLeft.appendChild(nameEl);
   headerLeft.appendChild(nameInput);
   headerLeft.appendChild(metaEl);
+  if (expiryBadge) headerLeft.appendChild(expiryBadge);
 
   header.appendChild(checkbox);
   header.appendChild(headerLeft);
@@ -358,6 +477,7 @@ function createGroupCardEl(group) {
   foldBtn.addEventListener('click', () => toggleFoldGroup(group.id, tabList, foldBtn));
 
   card.appendChild(header);
+  card.appendChild(ttlPanel);
   card.appendChild(tabList);
   return card;
 }
@@ -390,6 +510,7 @@ function renderGroupList(groups) {
 
 async function refreshGroupList() {
   try {
+    await checkExpiredTabGroups();
     _allGroups = await getAllTabGroups();
     const query = searchInputEl ? searchInputEl.value : '';
     renderGroupList(filterGroups(_allGroups, query));

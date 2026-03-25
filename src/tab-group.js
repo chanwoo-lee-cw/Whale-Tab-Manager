@@ -49,6 +49,7 @@ async function mergeTabGroups(groupIds, newName) {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2),
     name: newName || toMerge[0].name,
     createdAt: Date.now(),
+    expiresAt: null,
     tabs: toMerge.flatMap(g => g.tabs),
   };
   const remaining = groups.filter(g => !groupIds.includes(g.id));
@@ -92,12 +93,63 @@ async function addEmptySession(name) {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2),
     name: name.trim() || '새 세션',
     createdAt: Date.now(),
+    expiresAt: null,
     tabs: [],
   };
   groups.unshift(newGroup);
   await chrome.storage.local.set({ tabGroups: groups });
 }
 
+async function setTabGroupTTL(groupId, ttl) {
+  const groups = await getAllTabGroups();
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+  if (ttl === null) {
+    group.expiresAt = null;
+    group.notifiedExpiry = false;
+  } else if (ttl.type === 'duration') {
+    group.expiresAt = Date.now() + ttl.hours * 60 * 60 * 1000;
+    group.notifiedExpiry = false;
+  } else if (ttl.type === 'date') {
+    group.expiresAt = new Date(ttl.date + 'T00:00:00').getTime();
+    group.notifiedExpiry = false;
+  }
+  await chrome.storage.local.set({ tabGroups: groups });
+}
+
+async function checkExpiredTabGroups() {
+  const now = Date.now();
+  const groups = await getAllTabGroups();
+  const active = groups.filter(g => !g.expiresAt || g.expiresAt > now);
+  if (active.length !== groups.length) {
+    await chrome.storage.local.set({ tabGroups: active });
+  }
+}
+
+async function notifyExpiringTabGroups() {
+  const now = Date.now();
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+  const groups = await getAllTabGroups();
+  let changed = false;
+  for (const group of groups) {
+    if (!group.expiresAt || group.notifiedExpiry) continue;
+    const timeLeft = group.expiresAt - now;
+    if (timeLeft > 0 && timeLeft <= ONE_DAY_MS) {
+      chrome.notifications.create(`ttl-expiry-${group.id}`, {
+        type: 'basic',
+        iconUrl: 'icons/icon48.png',
+        title: 'Tab Archive — 만료 예정',
+        message: `"${group.name}" 그룹이 하루 후 만료됩니다.`,
+      });
+      group.notifiedExpiry = true;
+      changed = true;
+    }
+  }
+  if (changed) {
+    await chrome.storage.local.set({ tabGroups: groups });
+  }
+}
+
 if (typeof module !== 'undefined') {
-  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite, moveTabToGroup };
+  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite, moveTabToGroup, setTabGroupTTL, checkExpiredTabGroups };
 }

@@ -762,6 +762,142 @@ header::before {
 }
 
 /* ═══════════════════════════════════════
+   TTL
+═══════════════════════════════════════ */
+.btn-ttl {
+  font-size: 13px;
+  opacity: 0.55;
+}
+
+.btn-ttl:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
+  opacity: 1;
+}
+
+.btn-ttl.is-active {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.ttl-expiry-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.ttl-expiry-badge.is-soon {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.ttl-panel {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  animation: slideDown 0.18s var(--ease) both;
+}
+
+.ttl-type-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.ttl-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.ttl-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ttl-hours-input {
+  width: 64px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-1);
+  outline: none;
+}
+
+.ttl-hours-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(181, 91, 38, 0.1);
+}
+
+.ttl-date-input {
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-1);
+  outline: none;
+}
+
+.ttl-date-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(181, 91, 38, 0.1);
+}
+
+.ttl-input-label {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.ttl-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-ttl-save {
+  padding: 5px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--t) var(--ease);
+}
+
+.btn-ttl-save:hover {
+  background: var(--accent-light);
+}
+
+.btn-ttl-remove {
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--t) var(--ease);
+}
+
+.btn-ttl-remove:hover {
+  background: var(--danger-dim);
+}
+
+/* ═══════════════════════════════════════
    UTILITY
 ═══════════════════════════════════════ */
 .hidden { display: none !important; }

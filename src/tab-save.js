@@ -37,6 +37,7 @@ function createTabGroup(chromeTabs) {
     id: generateId(),
     name: formatDate(now),
     createdAt: now,
+    expiresAt: null,
     tabs,
   };
 }
