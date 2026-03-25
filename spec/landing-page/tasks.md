@@ -18,11 +18,19 @@
 - [x] `#merge-bar` UI 구현 (선택 수 표시, 병합 버튼)
 - [x] `mergeTabGroups` 함수 구현 (`src/tab-group.js` 또는 `src/landing.js`)
 - [x] 병합 버튼 클릭 시 이름 입력 → 병합 실행 플로우 구현
-- [ ] 그룹 카드 헤더에 Fold 토글 버튼 추가
-- [ ] `.tab-list`에 `.is-folded` 클래스 토글로 개별 접기/펼치기 구현 (`toggleFoldGroup`)
-- [ ] 헤더에 `#btn-fold-all` 버튼 추가
-- [ ] `foldAll(fold)` 함수 구현 — 전체 접기/펼치기 및 버튼 레이블 전환
-- [ ] Fold 상태에 맞는 CSS 스타일 추가 (`.tab-list.is-folded { display: none }`)
+- [x] 그룹 카드 헤더에 Fold 토글 버튼 추가
+- [x] `.tab-list`에 `.is-folded` 클래스 토글로 개별 접기/펼치기 구현 (`toggleFoldGroup`)
+- [x] 헤더에 `#btn-fold-all` 버튼 추가
+- [x] `foldAll(fold)` 함수 구현 — 전체 접기/펼치기 및 버튼 레이블 전환
+- [x] Fold 상태에 맞는 CSS 스타일 추가 (`.tab-list.is-folded { display: none }`)
+- [ ] 헤더에 `#btn-add-session` 버튼 추가
+- [ ] `addEmptySession(name)` 함수 구현 — 빈 TabGroup 생성 후 storage 저장
+- [ ] 버튼 클릭 시 이름 입력 → `addEmptySession` 호출 → 목록 갱신 플로우 구현
+- [ ] `landing.html`에 `<nav id="session-sidebar">` 및 `.content-layout` 2단 레이아웃 추가
+- [ ] `renderSidebar(groups)` 함수 구현 — 그룹 이름 목록 렌더링 및 클릭 시 스크롤
+- [ ] `bindSidebarScroll()` 함수 구현 — `IntersectionObserver`로 활성 항목 연동
+- [ ] `renderGroupList` 호출 시 `renderSidebar`도 함께 호출
+- [ ] 사이드바 CSS 스타일 추가 (고정 좌측 패널, `.sidebar-item`, `.is-active`)
 
 ## 테스트 시나리오
 
@@ -36,7 +44,12 @@
 - [x] 검색어 초기화 시 전체 목록이 복원되는지 확인
 - [x] 그룹 2개 선택 후 병합 시 1개의 그룹으로 합쳐지고 원본이 삭제되는지 확인
 - [x] 그룹 1개만 선택 시 병합 버튼이 비활성화되는지 확인
-- [ ] 그룹 Fold 버튼 클릭 시 탭 목록이 접히는지 확인
-- [ ] 접힌 상태에서 다시 클릭 시 탭 목록이 펼쳐지는지 확인
-- [ ] "모두 접기" 클릭 시 모든 그룹의 탭 목록이 접히는지 확인
-- [ ] "모두 펼치기" 클릭 시 모든 그룹의 탭 목록이 펼쳐지는지 확인
+- [ ] "새 세션 추가" 클릭 후 이름 입력 시 빈 그룹이 목록에 추가되는지 확인
+- [ ] 빈 그룹에 탭이 없는 상태로 정상 표시되는지 확인
+- [ ] 사이드바에 그룹 이름 목록이 표시되는지 확인
+- [ ] 사이드바 항목 클릭 시 해당 그룹 카드로 스크롤되는지 확인
+- [ ] 스크롤 시 현재 뷰포트의 그룹에 해당하는 사이드바 항목이 활성화되는지 확인
+- [x] 그룹 Fold 버튼 클릭 시 탭 목록이 접히는지 확인
+- [x] 접힌 상태에서 다시 클릭 시 탭 목록이 펼쳐지는지 확인
+- [x] "모두 접기" 클릭 시 모든 그룹의 탭 목록이 접히는지 확인
+- [x] "모두 펼치기" 클릭 시 모든 그룹의 탭 목록이 펼쳐지는지 확인

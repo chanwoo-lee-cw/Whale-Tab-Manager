@@ -532,6 +532,44 @@ main {
 }
 
 /* ═══════════════════════════════════════
+   FOLD
+═══════════════════════════════════════ */
+.tab-list.is-folded { display: none; }
+
+.btn-fold {
+  font-size: 12px;
+  opacity: 0.5;
+  transition: opacity var(--t) var(--ease), color var(--t) var(--ease), background var(--t) var(--ease);
+}
+
+.btn-fold:hover {
+  background: var(--surface-3);
+  color: var(--text-1);
+  opacity: 1;
+}
+
+.btn-fold-all {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r);
+  padding: 7px 14px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--t) var(--ease), color var(--t) var(--ease), background var(--t) var(--ease);
+}
+
+.btn-fold-all:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════
    UTILITY
 ═══════════════════════════════════════ */
 .hidden { display: none !important; }

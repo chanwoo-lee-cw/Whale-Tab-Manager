@@ -4,9 +4,11 @@ const mergeBarEl = document.getElementById('merge-bar');
 const mergeCountEl = document.getElementById('merge-count');
 const mergeBtnEl = document.getElementById('merge-btn');
 const searchInputEl = document.getElementById('search-input');
+const foldAllBtnEl = document.getElementById('btn-fold-all');
 
 let _allGroups = [];
 const _selectedIds = new Set();
+const _foldedIds = new Set();
 
 function formatDate(timestamp) {
   const d = new Date(timestamp);
@@ -26,6 +28,43 @@ function filterGroups(groups, query) {
       return matchedTabs.length > 0 ? { ...group, tabs: matchedTabs } : null;
     })
     .filter(Boolean);
+}
+
+function updateFoldAllBtn() {
+  if (!foldAllBtnEl || _allGroups.length === 0) return;
+  const allFolded = _allGroups.every(g => _foldedIds.has(g.id));
+  foldAllBtnEl.textContent = allFolded ? '모두 펼치기' : '모두 접기';
+}
+
+function toggleFoldGroup(groupId, tabList, foldBtn) {
+  const isFolded = _foldedIds.has(groupId);
+  if (isFolded) {
+    _foldedIds.delete(groupId);
+    tabList.classList.remove('is-folded');
+    foldBtn.textContent = '▾';
+    foldBtn.title = '접기';
+  } else {
+    _foldedIds.add(groupId);
+    tabList.classList.add('is-folded');
+    foldBtn.textContent = '▸';
+    foldBtn.title = '펼치기';
+  }
+  updateFoldAllBtn();
+}
+
+function foldAll(fold) {
+  _allGroups.forEach(g => fold ? _foldedIds.add(g.id) : _foldedIds.delete(g.id));
+  document.querySelectorAll('.group-card').forEach(card => {
+    const tabList = card.querySelector('.tab-list');
+    const foldBtn = card.querySelector('.btn-fold');
+    if (!tabList) return;
+    tabList.classList.toggle('is-folded', fold);
+    if (foldBtn) {
+      foldBtn.textContent = fold ? '▸' : '▾';
+      foldBtn.title = fold ? '펼치기' : '접기';
+    }
+  });
+  updateFoldAllBtn();
 }
 
 function updateMergeBar() {
@@ -160,6 +199,12 @@ function createGroupCardEl(group) {
   const headerActions = document.createElement('div');
   headerActions.className = 'header-actions';
 
+  const foldBtn = document.createElement('button');
+  foldBtn.className = 'btn-icon btn-fold';
+  const isFolded = _foldedIds.has(group.id);
+  foldBtn.textContent = isFolded ? '▸' : '▾';
+  foldBtn.title = isFolded ? '펼치기' : '접기';
+
   const openAllBtn = document.createElement('button');
   openAllBtn.className = 'btn-text';
   openAllBtn.textContent = '전체 열기';
@@ -177,6 +222,7 @@ function createGroupCardEl(group) {
     await refreshGroupList();
   });
 
+  headerActions.appendChild(foldBtn);
   headerActions.appendChild(openAllBtn);
   headerActions.appendChild(deleteGroupBtn);
 
@@ -193,7 +239,10 @@ function createGroupCardEl(group) {
   // Tab list
   const tabList = document.createElement('ul');
   tabList.className = 'tab-list';
+  if (_foldedIds.has(group.id)) tabList.classList.add('is-folded');
   group.tabs.forEach(tab => tabList.appendChild(createTabItemEl(tab, group.id)));
+
+  foldBtn.addEventListener('click', () => toggleFoldGroup(group.id, tabList, foldBtn));
 
   card.appendChild(header);
   card.appendChild(tabList);
@@ -212,6 +261,7 @@ function renderGroupList(groups) {
   emptyStateEl.classList.add('hidden');
   groupListEl.classList.remove('hidden');
   groups.forEach(group => groupListEl.appendChild(createGroupCardEl(group)));
+  updateFoldAllBtn();
 }
 
 async function refreshGroupList() {
@@ -242,6 +292,14 @@ function bindSearchInput() {
   });
 }
 
+function bindFoldAll() {
+  if (!foldAllBtnEl) return;
+  foldAllBtnEl.addEventListener('click', () => {
+    const allFolded = _allGroups.length > 0 && _allGroups.every(g => _foldedIds.has(g.id));
+    foldAll(!allFolded);
+  });
+}
+
 function bindMergeBar() {
   if (!mergeBtnEl) return;
   mergeBtnEl.addEventListener('click', async () => {
@@ -263,6 +321,7 @@ if (typeof document !== 'undefined' && typeof module === 'undefined') {
     bindStorageListener();
     bindSearchInput();
     bindMergeBar();
+    bindFoldAll();
   });
 }
 
