@@ -98,6 +98,7 @@ async function addEmptySession(name) {
   };
   groups.unshift(newGroup);
   await chrome.storage.local.set({ tabGroups: groups });
+  return newGroup;
 }
 
 async function setTabGroupTTL(groupId, ttl) {

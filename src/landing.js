@@ -549,10 +549,13 @@ function bindAddSession() {
   const addSessionBtnEl = document.getElementById('btn-add-session');
   if (!addSessionBtnEl) return;
   addSessionBtnEl.addEventListener('click', async () => {
-    const name = prompt('새 세션 이름을 입력하세요:', '새 세션');
-    if (name === null) return;
-    await addEmptySession(name.trim() || '새 세션');
+    const newGroup = await addEmptySession('새 세션');
     await refreshGroupList();
+    const card = document.querySelector(`.group-card[data-group-id="${newGroup.id}"]`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      card.querySelector('.group-name')?.click();
+    }
   });
 }
 
