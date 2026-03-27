@@ -539,15 +539,11 @@ function createGroupCardEl(group) {
 
   const ttlPanel = createTtlPanel(group);
 
-  // 태그 패널
-  const tagPanel = document.createElement('div');
-  tagPanel.className = 'tag-panel hidden';
-  const tagInputRow = document.createElement('div');
-  tagInputRow.className = 'tag-input-row';
+  // 태그 인라인 입력
   const tagInput = document.createElement('input');
   tagInput.type = 'text';
-  tagInput.className = 'tag-text-input';
-  tagInput.placeholder = '태그 입력 후 Enter';
+  tagInput.className = 'tag-inline-input hidden';
+  tagInput.placeholder = '태그 입력…';
 
   const tagSuggestEl = document.createElement('ul');
   tagSuggestEl.className = 'tag-autocomplete hidden';
@@ -590,28 +586,35 @@ function createGroupCardEl(group) {
     tagSuggestEl.classList.remove('hidden');
   }
 
-  tagInput.addEventListener('input', () => showSuggestions(tagInput.value));
-  tagInput.addEventListener('focus', () => { if (tagInput.value === '') showSuggestions(''); });
-  tagInput.addEventListener('blur', () => setTimeout(() => tagSuggestEl.classList.add('hidden'), 150));
+  function openTagInput() {
+    tagInput.classList.remove('hidden');
+    addTagToggleBtn.classList.add('hidden');
+    tagInput.focus();
+    showSuggestions('');
+  }
 
-  const tagAddBtn = document.createElement('button');
-  tagAddBtn.className = 'btn-tag-add';
-  tagAddBtn.textContent = '추가';
+  function closeTagInput() {
+    tagSuggestEl.classList.add('hidden');
+    tagInput.classList.add('hidden');
+    tagInput.value = '';
+    addTagToggleBtn.classList.remove('hidden');
+  }
+
   async function commitTag() {
     const tag = tagInput.value.trim();
-    if (!tag) return;
     tagSuggestEl.classList.add('hidden');
+    if (!tag) { closeTagInput(); return; }
     await addTagToGroup(group.id, tag);
-    tagInput.value = '';
     await refreshGroupList();
   }
+
+  tagInput.addEventListener('input', () => showSuggestions(tagInput.value));
+  tagInput.addEventListener('focus', () => { if (tagInput.value === '') showSuggestions(''); });
+  tagInput.addEventListener('blur', () => setTimeout(() => { tagSuggestEl.classList.add('hidden'); closeTagInput(); }, 150));
   tagInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') commitTag();
-    if (e.key === 'Escape') { tagSuggestEl.classList.add('hidden'); tagPanel.classList.add('hidden'); }
+    if (e.key === 'Escape') closeTagInput();
   });
-  tagAddBtn.addEventListener('click', commitTag);
-  tagInputRow.append(tagInput, tagAddBtn);
-  tagPanel.appendChild(tagInputRow);
 
   const ttlBtn = document.createElement('button');
   ttlBtn.className = 'btn-icon btn-ttl' + (group.expiresAt ? ' is-active' : '');
@@ -694,17 +697,14 @@ function createGroupCardEl(group) {
   addTagToggleBtn.className = 'btn-icon btn-add-tag-toggle';
   addTagToggleBtn.title = '태그 추가';
   addTagToggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>';
-  addTagToggleBtn.addEventListener('click', () => {
-    tagPanel.classList.toggle('hidden');
-    if (!tagPanel.classList.contains('hidden')) tagInput.focus();
-  });
+  addTagToggleBtn.addEventListener('click', openTagInput);
   tagFooter.appendChild(addTagToggleBtn);
+  tagFooter.appendChild(tagInput);
 
   card.appendChild(header);
   card.appendChild(ttlPanel);
   card.appendChild(tabList);
   card.appendChild(tagFooter);
-  card.appendChild(tagPanel);
   return card;
 }
 

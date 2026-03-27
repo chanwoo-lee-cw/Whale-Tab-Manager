@@ -935,17 +935,23 @@ header::before {
 
 .btn-remove-tag:hover { opacity: 1; }
 
-.tag-panel {
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 16px;
-  animation: slideDown 0.18s var(--ease) both;
+.tag-inline-input {
+  height: 24px;
+  padding: 0 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-1);
+  outline: none;
+  width: 100px;
+  transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 
-.tag-input-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+.tag-inline-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(181, 91, 38, 0.1);
 }
 
 .tag-autocomplete {
@@ -976,37 +982,6 @@ header::before {
   color: var(--text-1);
 }
 
-.tag-text-input {
-  flex: 1;
-  padding: 5px 9px;
-  background: var(--surface);
-  border: 1px solid var(--border-2);
-  border-radius: 4px;
-  font-family: var(--font-ui);
-  font-size: 15px;
-  color: var(--text-1);
-  outline: none;
-}
-
-.tag-text-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(181, 91, 38, 0.1);
-}
-
-.btn-tag-add {
-  padding: 5px 14px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background var(--t) var(--ease);
-}
-
-.btn-tag-add:hover { background: var(--accent-light); }
 
 .tag-footer {
   display: flex;
