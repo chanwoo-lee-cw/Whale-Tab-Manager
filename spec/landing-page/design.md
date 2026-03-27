@@ -17,8 +17,10 @@ landing.html
 │           └── #btn-fold-all    — 세션 전부 접기 / 펼치기 토글
 └── <div.page-body>              — 3-column 중앙 정렬 레이아웃
     ├── <nav#session-sidebar> [200px, sticky]
-    │   └── .sidebar-item (그룹마다 반복)
-    │       └── .is-active       — 현재 뷰포트에 보이는 그룹
+    │   ├── .sidebar-tabs        — `세션` / `태그` 탭 전환 버튼
+    │   ├── .sidebar-session     — 세션 뷰: 그룹 이름 목록
+    │   │   └── .sidebar-item (그룹마다 반복)
+    │   └── .sidebar-tag         — 태그 뷰: 태그 목록 (클릭 시 필터링)
     ├── <div.content-layout> [flex:1, max-width:720px]
     │   ├── #merge-bar           — 그룹 선택 시 표시되는 병합 액션 바
     │   │   ├── #merge-count     — 선택된 그룹 수
@@ -37,6 +39,9 @@ landing.html
     │           │       ├── .btn-fold       — 개별 Fold 토글
     │           │       ├── .btn-text       — 전체 열기
     │           │       └── .btn-delete-group
+    │           ├── .group-tags      — 태그 목록 + 태그 추가 입력 필드
+    │           │   ├── .tag-item    — 태그 배지 (클릭/X로 삭제)
+    │           │   └── .tag-input   — 태그 입력 (자동완성 드롭다운 포함)
     │           └── .tab-list (.is-folded 시 숨김)
     │               └── .tab-item
     │                   ├── .tab-favicon
@@ -122,6 +127,24 @@ landing.html
 - 같은 그룹 내 이동이면 순서만 변경
 - 변경된 groups 배열을 `chrome.storage.local.set`으로 저장
 - `srcGroup`의 탭이 0개가 되어도 그룹은 삭제하지 않음
+
+### 세션 드래그 앤 드롭 (LP-26)
+
+#### UI 구조
+- `.group-card`에 `draggable="true"` 속성 추가
+- 드래그 중: `.group-card.is-dragging` (반투명 처리)
+- 드롭 대상 위: `.group-card.drag-over` (구분선 표시)
+
+#### 이벤트 흐름
+- `dragstart` → 드래그 대상 `groupId`를 `dataTransfer`에 저장
+- `dragover` → 기본 동작 방지 + 드롭 위치 표시
+- `drop` → `moveGroupToIndex(groupId, dstIndex)` 호출 후 `refreshGroupList`
+- `dragend` → 드래그 상태 클래스 정리
+
+#### `moveGroupToIndex(groupId: string, dstIndex: number): Promise<void>`
+- groups 배열에서 해당 그룹을 제거하고 `dstIndex` 위치에 삽입
+- 변경된 groups 배열을 `chrome.storage.local.set`으로 저장
+- 즐겨찾기 그룹은 드래그해도 즐겨찾기 상태를 유지하되, 목록 상단 고정 정렬과는 독립적으로 처리
 
 ## 에러 처리
 - 저장된 데이터가 없거나 파싱 실패 시 `#empty-state` 표시

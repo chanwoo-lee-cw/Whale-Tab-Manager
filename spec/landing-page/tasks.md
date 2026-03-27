@@ -193,3 +193,21 @@
 
 ### 의존성
 - Task 9 -> Task 1
+
+---
+
+## Task 10: 세션 드래그 앤 드롭
+
+### Task 10-1: 세션 드래그 로직
+- [ ] `moveGroupToIndex(groupId, dstIndex)` 함수 구현 — groups 배열 내 순서 변경 후 storage 저장
+- 검증: 함수 호출 후 storage의 groups 순서가 올바르게 업데이트되는지 확인
+
+### Task 10-2: 세션 드래그 UI
+- [ ] `.group-card`에 `draggable="true"` 속성 및 drag 이벤트 핸들러 추가
+- [ ] `#group-list`에 `dragover` / `drop` 이벤트 핸들러 추가
+- [ ] 드래그 중 `.is-dragging` 클래스, 드롭 위치 `.drag-over` 표시 CSS 추가
+- [ ] 드롭 후 `refreshGroupList` 호출로 변경 사항 즉시 반영
+- 검증: 세션 카드를 드래그하여 순서 변경 후 목록이 즉시 갱신되는지 확인
+
+### 의존성
+- Task 10 -> Task 1
