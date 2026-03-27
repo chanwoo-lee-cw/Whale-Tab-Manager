@@ -948,6 +948,34 @@ header::before {
   align-items: center;
 }
 
+.tag-autocomplete {
+  position: fixed;
+  z-index: 1000;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 2px 8px rgba(28, 25, 22, 0.08);
+  list-style: none;
+  margin: 0;
+  padding: 3px 0;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.tag-autocomplete-item {
+  padding: 5px 10px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background var(--t) var(--ease), color var(--t) var(--ease);
+}
+
+.tag-autocomplete-item:hover {
+  background: var(--surface-3);
+  color: var(--text-1);
+}
+
 .tag-text-input {
   flex: 1;
   padding: 5px 9px;

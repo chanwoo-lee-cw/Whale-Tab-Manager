@@ -479,19 +479,66 @@ function createGroupCardEl(group) {
   tagInput.type = 'text';
   tagInput.className = 'tag-text-input';
   tagInput.placeholder = '태그 입력 후 Enter';
+
+  const tagSuggestEl = document.createElement('ul');
+  tagSuggestEl.className = 'tag-autocomplete hidden';
+  document.body.appendChild(tagSuggestEl);
+
+  function positionSuggest() {
+    const rect = tagInput.getBoundingClientRect();
+    tagSuggestEl.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+    tagSuggestEl.style.left = rect.left + 'px';
+    tagSuggestEl.style.width = rect.width + 'px';
+  }
+
+  function getExistingTags() {
+    const currentTags = new Set(group.tags || []);
+    const all = new Set();
+    _allGroups.forEach(g => (g.tags || []).forEach(t => { if (!currentTags.has(t)) all.add(t); }));
+    return [...all];
+  }
+
+  function showSuggestions(query) {
+    const q = query.trim().toLowerCase();
+    const suggestions = q
+      ? getExistingTags().filter(t => t.toLowerCase().includes(q))
+      : getExistingTags();
+    if (suggestions.length === 0) { tagSuggestEl.classList.add('hidden'); return; }
+    tagSuggestEl.innerHTML = '';
+    suggestions.forEach(tag => {
+      const li = document.createElement('li');
+      li.className = 'tag-autocomplete-item';
+      li.textContent = tag;
+      li.addEventListener('mousedown', e => {
+        e.preventDefault();
+        tagInput.value = tag;
+        tagSuggestEl.classList.add('hidden');
+        commitTag();
+      });
+      tagSuggestEl.appendChild(li);
+    });
+    positionSuggest();
+    tagSuggestEl.classList.remove('hidden');
+  }
+
+  tagInput.addEventListener('input', () => showSuggestions(tagInput.value));
+  tagInput.addEventListener('focus', () => { if (tagInput.value === '') showSuggestions(''); });
+  tagInput.addEventListener('blur', () => setTimeout(() => tagSuggestEl.classList.add('hidden'), 150));
+
   const tagAddBtn = document.createElement('button');
   tagAddBtn.className = 'btn-tag-add';
   tagAddBtn.textContent = '추가';
   async function commitTag() {
     const tag = tagInput.value.trim();
     if (!tag) return;
+    tagSuggestEl.classList.add('hidden');
     await addTagToGroup(group.id, tag);
     tagInput.value = '';
     await refreshGroupList();
   }
   tagInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') commitTag();
-    if (e.key === 'Escape') tagPanel.classList.add('hidden');
+    if (e.key === 'Escape') { tagSuggestEl.classList.add('hidden'); tagPanel.classList.add('hidden'); }
   });
   tagAddBtn.addEventListener('click', commitTag);
   tagInputRow.append(tagInput, tagAddBtn);
