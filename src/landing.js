@@ -120,6 +120,7 @@ function filterGroups(groups, query) {
   return groups
     .map(group => {
       if (group.name.toLowerCase().includes(q)) return group;
+      if ((group.tags || []).some(t => t.toLowerCase().includes(q))) return group;
       const matchedTabs = group.tabs.filter(
         t => t.title.toLowerCase().includes(q) || t.url.toLowerCase().includes(q)
       );
