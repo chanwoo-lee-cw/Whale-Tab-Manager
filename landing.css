@@ -1038,6 +1038,7 @@ header::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 3px;
   opacity: 0.5;
 }
 
