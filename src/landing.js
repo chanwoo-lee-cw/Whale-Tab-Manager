@@ -10,8 +10,12 @@ const sidebarEl = document.getElementById('session-sidebar');
 let _allGroups = [];
 const _selectedIds = new Set();
 const _foldedIds = new Set();
+const FILTER_FAVORITES = '__favorites__';
 let _activeTagFilter = null;
 let _sidebarTab = 'session';
+let _draggingGroupId = null;
+let _dropIndicator = null;
+let _dropBeforeGroupId = null;
 
 function showConfirm(message) {
   // "이름" 그룹을… 패턴에서 이름 추출
@@ -111,6 +115,7 @@ function formatDate(timestamp) {
 
 function applyTagFilter(groups) {
   if (!_activeTagFilter) return groups;
+  if (_activeTagFilter === FILTER_FAVORITES) return groups.filter(g => g.isFavorite);
   return groups.filter(g => (g.tags || []).includes(_activeTagFilter));
 }
 
@@ -170,14 +175,18 @@ function renderSidebar(visibleGroups) {
       sidebarEl.appendChild(item);
     });
   } else {
+    const favBtn = document.createElement('button');
+    favBtn.className = 'sidebar-item sidebar-item--favorite' + (_activeTagFilter === FILTER_FAVORITES ? ' is-active' : '');
+    favBtn.textContent = '★ 즐겨찾기';
+    favBtn.addEventListener('click', () => {
+      _activeTagFilter = _activeTagFilter === FILTER_FAVORITES ? null : FILTER_FAVORITES;
+      const query = searchInputEl ? searchInputEl.value : '';
+      renderGroupList(filterGroups(applyTagFilter(_allGroups), query));
+    });
+    sidebarEl.appendChild(favBtn);
+
     const allTags = [...new Set(_allGroups.flatMap(g => g.tags || []))];
-    if (allTags.length === 0) {
-      const empty = document.createElement('p');
-      empty.className = 'sidebar-empty';
-      empty.textContent = '태그 없음';
-      sidebarEl.appendChild(empty);
-      return;
-    }
+    if (allTags.length === 0) return;
     allTags.forEach(tag => {
       const item = document.createElement('button');
       item.className = 'sidebar-item' + (_activeTagFilter === tag ? ' is-active' : '');
@@ -272,6 +281,7 @@ function createTabItemEl(tab, groupId) {
   item.dataset.groupId = groupId;
 
   item.addEventListener('dragstart', e => {
+    e.stopPropagation();
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', JSON.stringify({ tabId: tab.id, srcGroupId: groupId }));
     item.classList.add('is-dragging');
@@ -283,6 +293,7 @@ function createTabItemEl(tab, groupId) {
   });
 
   item.addEventListener('dragover', e => {
+    if (_draggingGroupId !== null) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     document.querySelectorAll('.tab-item.drag-over').forEach(el => el.classList.remove('drag-over'));
@@ -293,7 +304,7 @@ function createTabItemEl(tab, groupId) {
     e.preventDefault();
     item.classList.remove('drag-over');
     const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-    if (data.tabId === tab.id) return;
+    if (!data.tabId || data.tabId === tab.id) return;
     const dstGroupId = groupId;
     const dstTabList = item.closest('.tab-list');
     const items = [...dstTabList.querySelectorAll('.tab-item')];
@@ -437,9 +448,58 @@ function createGroupCardEl(group) {
   const card = document.createElement('div');
   card.className = 'group-card';
   card.dataset.groupId = group.id;
+  card.draggable = true;
   if (_selectedIds.has(group.id)) card.classList.add('is-selected');
   if (group.isFavorite) card.classList.add('is-favorite');
   if (_foldedIds.has(group.id)) card.classList.add('is-folded');
+
+  // 세션 드래그 앤 드롭 (LP-26)
+  card.addEventListener('dragstart', e => {
+    _draggingGroupId = group.id;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', JSON.stringify({ groupId: group.id }));
+    card.classList.add('is-dragging');
+    _dropIndicator = document.createElement('div');
+    _dropIndicator.className = 'group-drop-indicator';
+  });
+
+  card.addEventListener('dragend', () => {
+    _draggingGroupId = null;
+    _dropBeforeGroupId = null;
+    card.classList.remove('is-dragging');
+    if (_dropIndicator && _dropIndicator.parentNode) {
+      _dropIndicator.parentNode.removeChild(_dropIndicator);
+    }
+    _dropIndicator = null;
+  });
+
+  card.addEventListener('dragover', e => {
+    if (_draggingGroupId === null || _draggingGroupId === group.id || !_dropIndicator) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const rect = card.getBoundingClientRect();
+    const insertBefore = e.clientY < rect.top + rect.height / 2;
+    if (insertBefore) {
+      _dropBeforeGroupId = group.id;
+      groupListEl.insertBefore(_dropIndicator, card);
+    } else {
+      let nextCard = card.nextElementSibling;
+      if (nextCard === _dropIndicator) nextCard = nextCard.nextElementSibling;
+      _dropBeforeGroupId = nextCard ? nextCard.dataset.groupId : null;
+      groupListEl.insertBefore(_dropIndicator, nextCard || null);
+    }
+  });
+
+  card.addEventListener('drop', async e => {
+    e.preventDefault();
+    if (_dropIndicator && _dropIndicator.parentNode) {
+      _dropIndicator.parentNode.removeChild(_dropIndicator);
+    }
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (!data.groupId) return;
+    await moveGroupToIndex(data.groupId, _dropBeforeGroupId);
+    await refreshGroupList();
+  });
 
   // 병합 체크박스
   const checkbox = document.createElement('input');
@@ -461,6 +521,7 @@ function createGroupCardEl(group) {
 
   // 빈 그룹 헤더에 드롭 허용 (LP-19a)
   header.addEventListener('dragover', e => {
+    if (_draggingGroupId !== null) return;
     if (group.tabs.length > 0) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
@@ -721,6 +782,7 @@ function createGroupCardEl(group) {
 
   // 빈 그룹 또는 탭 사이 빈 공간에 드롭 허용
   tabList.addEventListener('dragover', e => {
+    if (_draggingGroupId !== null) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     tabList.classList.add('drag-over');
@@ -766,17 +828,8 @@ function createGroupCardEl(group) {
   return card;
 }
 
-function sortGroups(groups) {
-  return [...groups].sort((a, b) => {
-    if (a.isFavorite && !b.isFavorite) return -1;
-    if (!a.isFavorite && b.isFavorite) return 1;
-    return 0;
-  });
-}
-
 function renderGroupList(groups) {
   groupListEl.innerHTML = '';
-  groups = sortGroups(groups);
 
   if (groups.length === 0) {
     emptyStateEl.classList.remove('hidden');
@@ -802,6 +855,33 @@ async function refreshGroupList() {
     console.error('[landing] refreshGroupList failed:', e);
     renderGroupList([]);
   }
+}
+
+function bindGroupListDrop() {
+  groupListEl.addEventListener('dragover', e => {
+    if (_draggingGroupId === null || !_dropIndicator) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const cards = [...groupListEl.children].filter(el => el.classList.contains('group-card'));
+    if (cards.length === 0) return;
+    const lastCard = cards[cards.length - 1];
+    if (e.clientY > lastCard.getBoundingClientRect().bottom) {
+      _dropBeforeGroupId = null;
+      groupListEl.appendChild(_dropIndicator);
+    }
+  });
+
+  groupListEl.addEventListener('drop', async e => {
+    if (_draggingGroupId === null) return;
+    e.preventDefault();
+    if (_dropIndicator && _dropIndicator.parentNode) {
+      _dropIndicator.parentNode.removeChild(_dropIndicator);
+    }
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (!data.groupId) return;
+    await moveGroupToIndex(data.groupId, _dropBeforeGroupId);
+    await refreshGroupList();
+  });
 }
 
 function bindStorageListener() {
@@ -866,6 +946,7 @@ if (typeof document !== 'undefined' && typeof module === 'undefined') {
     bindMergeBar();
     bindFoldAll();
     bindAddSession();
+    bindGroupListDrop();
   });
 }
 

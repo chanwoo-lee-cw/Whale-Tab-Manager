@@ -313,6 +313,17 @@ header::before {
   border-left-color: var(--accent);
 }
 
+.sidebar-item--favorite {
+  color: var(--text-1);
+  font-weight: 500;
+}
+
+.sidebar-item--favorite.is-active {
+  color: #e6a817;
+  border-left-color: #e6a817;
+  background: rgba(230, 168, 23, 0.1);
+}
+
 
 /* ═══════════════════════════════════════
    MERGE BAR
@@ -747,6 +758,48 @@ header::before {
   outline: 2px dashed var(--accent);
   outline-offset: -2px;
   background: var(--accent-dim);
+}
+
+.group-card[draggable="true"] {
+  cursor: grab;
+}
+
+.group-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.group-card.is-dragging {
+  opacity: 0.4;
+  background: var(--surface-3);
+}
+
+.group-drop-indicator {
+  height: 2px;
+  margin: 0 4px;
+  background: var(--accent);
+  border-radius: 1px;
+  position: relative;
+  pointer-events: none;
+}
+
+.group-drop-indicator::before,
+.group-drop-indicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.group-drop-indicator::before {
+  left: -4px;
+}
+
+.group-drop-indicator::after {
+  right: -4px;
 }
 
 /* ═══════════════════════════════════════
