@@ -897,6 +897,151 @@ header::before {
 }
 
 /* ═══════════════════════════════════════
+   TAGS
+═══════════════════════════════════════ */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+  padding: 0 9px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(181, 91, 38, 0.2);
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: var(--font-ui);
+  line-height: 24px;
+  color: var(--accent);
+}
+
+.btn-remove-tag {
+  background: none;
+  border: none;
+  padding: 0 0 0 2px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent);
+  opacity: 0.5;
+  line-height: 1;
+  transition: opacity var(--t) var(--ease);
+}
+
+.btn-remove-tag:hover { opacity: 1; }
+
+.tag-panel {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  animation: slideDown 0.18s var(--ease) both;
+}
+
+.tag-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tag-text-input {
+  flex: 1;
+  padding: 5px 9px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--text-1);
+  outline: none;
+}
+
+.tag-text-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(181, 91, 38, 0.1);
+}
+
+.btn-tag-add {
+  padding: 5px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--t) var(--ease);
+}
+
+.btn-tag-add:hover { background: var(--accent-light); }
+
+.tag-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.btn-add-tag-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+}
+
+.btn-add-tag-toggle:hover {
+  opacity: 1;
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR TABS
+═══════════════════════════════════════ */
+.sidebar-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.sidebar-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 6px 0;
+  margin-bottom: -1px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+
+.sidebar-tab:hover { color: var(--text-1); }
+
+.sidebar-tab.is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.sidebar-empty {
+  padding: 10px;
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════
    UTILITY
 ═══════════════════════════════════════ */
 .hidden { display: none !important; }

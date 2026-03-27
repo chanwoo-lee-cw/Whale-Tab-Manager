@@ -10,11 +10,18 @@ const sidebarEl = document.getElementById('session-sidebar');
 let _allGroups = [];
 const _selectedIds = new Set();
 const _foldedIds = new Set();
+let _activeTagFilter = null;
+let _sidebarTab = 'session';
 
 function formatDate(timestamp) {
   const d = new Date(timestamp);
   const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function applyTagFilter(groups) {
+  if (!_activeTagFilter) return groups;
+  return groups.filter(g => (g.tags || []).includes(_activeTagFilter));
 }
 
 function filterGroups(groups, query) {
@@ -31,25 +38,67 @@ function filterGroups(groups, query) {
     .filter(Boolean);
 }
 
-function renderSidebar(groups) {
+function renderSidebar(visibleGroups) {
   if (!sidebarEl) return;
   sidebarEl.innerHTML = '';
 
-  if (groups.length === 0) return;
+  // 탭 헤더
+  const tabsEl = document.createElement('div');
+  tabsEl.className = 'sidebar-tabs';
 
-  groups.forEach(group => {
-    const item = document.createElement('button');
-    item.className = 'sidebar-item';
-    item.dataset.groupId = group.id;
-    item.textContent = group.name;
-    item.title = group.name;
-    item.addEventListener('click', () => {
-      const card = document.querySelector(`.group-card[data-group-id="${group.id}"]`);
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-    sidebarEl.appendChild(item);
+  const sessionTabBtn = document.createElement('button');
+  sessionTabBtn.className = 'sidebar-tab' + (_sidebarTab === 'session' ? ' is-active' : '');
+  sessionTabBtn.textContent = '세션';
+  sessionTabBtn.addEventListener('click', () => {
+    _sidebarTab = 'session';
+    renderSidebar(visibleGroups);
   });
 
+  const tagTabBtn = document.createElement('button');
+  tagTabBtn.className = 'sidebar-tab' + (_sidebarTab === 'tag' ? ' is-active' : '');
+  tagTabBtn.textContent = '태그';
+  tagTabBtn.addEventListener('click', () => {
+    _sidebarTab = 'tag';
+    renderSidebar(visibleGroups);
+  });
+
+  tabsEl.append(sessionTabBtn, tagTabBtn);
+  sidebarEl.appendChild(tabsEl);
+
+  if (_sidebarTab === 'session') {
+    visibleGroups.forEach(group => {
+      const item = document.createElement('button');
+      item.className = 'sidebar-item';
+      item.dataset.groupId = group.id;
+      item.textContent = group.name;
+      item.title = group.name;
+      item.addEventListener('click', () => {
+        const card = document.querySelector(`.group-card[data-group-id="${group.id}"]`);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      sidebarEl.appendChild(item);
+    });
+  } else {
+    const allTags = [...new Set(_allGroups.flatMap(g => g.tags || []))];
+    if (allTags.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'sidebar-empty';
+      empty.textContent = '태그 없음';
+      sidebarEl.appendChild(empty);
+      return;
+    }
+    allTags.forEach(tag => {
+      const item = document.createElement('button');
+      item.className = 'sidebar-item' + (_activeTagFilter === tag ? ' is-active' : '');
+      item.textContent = `# ${tag}`;
+      item.addEventListener('click', () => {
+        _activeTagFilter = _activeTagFilter === tag ? null : tag;
+        const query = searchInputEl ? searchInputEl.value : '';
+        renderGroupList(filterGroups(applyTagFilter(_allGroups), query));
+      });
+      sidebarEl.appendChild(item);
+    });
+  }
 }
 
 function updateFoldAllBtn() {
@@ -421,6 +470,33 @@ function createGroupCardEl(group) {
 
   const ttlPanel = createTtlPanel(group);
 
+  // 태그 패널
+  const tagPanel = document.createElement('div');
+  tagPanel.className = 'tag-panel hidden';
+  const tagInputRow = document.createElement('div');
+  tagInputRow.className = 'tag-input-row';
+  const tagInput = document.createElement('input');
+  tagInput.type = 'text';
+  tagInput.className = 'tag-text-input';
+  tagInput.placeholder = '태그 입력 후 Enter';
+  const tagAddBtn = document.createElement('button');
+  tagAddBtn.className = 'btn-tag-add';
+  tagAddBtn.textContent = '추가';
+  async function commitTag() {
+    const tag = tagInput.value.trim();
+    if (!tag) return;
+    await addTagToGroup(group.id, tag);
+    tagInput.value = '';
+    await refreshGroupList();
+  }
+  tagInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') commitTag();
+    if (e.key === 'Escape') tagPanel.classList.add('hidden');
+  });
+  tagAddBtn.addEventListener('click', commitTag);
+  tagInputRow.append(tagInput, tagAddBtn);
+  tagPanel.appendChild(tagInputRow);
+
   const ttlBtn = document.createElement('button');
   ttlBtn.className = 'btn-icon btn-ttl' + (group.expiresAt ? ' is-active' : '');
   ttlBtn.title = 'TTL 설정';
@@ -435,6 +511,25 @@ function createGroupCardEl(group) {
   headerActions.appendChild(foldBtn);
   headerActions.appendChild(openAllBtn);
   headerActions.appendChild(deleteGroupBtn);
+
+  const tagsRow = document.createElement('div');
+  tagsRow.className = 'tag-list';
+  (group.tags || []).forEach(tag => {
+    const badge = document.createElement('span');
+    badge.className = 'tag-badge';
+    const tagText = document.createTextNode(`# ${tag}`);
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-remove-tag';
+    removeBtn.textContent = '×';
+    removeBtn.title = '태그 삭제';
+    removeBtn.addEventListener('click', async e => {
+      e.stopPropagation();
+      await removeTagFromGroup(group.id, tag);
+      await refreshGroupList();
+    });
+    badge.append(tagText, removeBtn);
+    tagsRow.appendChild(badge);
+  });
 
   const headerLeft = document.createElement('div');
   headerLeft.className = 'header-left';
@@ -476,9 +571,24 @@ function createGroupCardEl(group) {
 
   foldBtn.addEventListener('click', () => toggleFoldGroup(group.id, tabList, foldBtn));
 
+  const tagFooter = document.createElement('div');
+  tagFooter.className = 'tag-footer';
+  if (tagsRow.children.length > 0) tagFooter.appendChild(tagsRow);
+  const addTagToggleBtn = document.createElement('button');
+  addTagToggleBtn.className = 'btn-icon btn-add-tag-toggle';
+  addTagToggleBtn.title = '태그 추가';
+  addTagToggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>';
+  addTagToggleBtn.addEventListener('click', () => {
+    tagPanel.classList.toggle('hidden');
+    if (!tagPanel.classList.contains('hidden')) tagInput.focus();
+  });
+  tagFooter.appendChild(addTagToggleBtn);
+
   card.appendChild(header);
   card.appendChild(ttlPanel);
   card.appendChild(tabList);
+  card.appendChild(tagFooter);
+  card.appendChild(tagPanel);
   return card;
 }
 
@@ -513,7 +623,7 @@ async function refreshGroupList() {
     await checkExpiredTabGroups();
     _allGroups = await getAllTabGroups();
     const query = searchInputEl ? searchInputEl.value : '';
-    renderGroupList(filterGroups(_allGroups, query));
+    renderGroupList(filterGroups(applyTagFilter(_allGroups), query));
   } catch (e) {
     console.error('[landing] refreshGroupList failed:', e);
     renderGroupList([]);
@@ -525,7 +635,7 @@ function bindStorageListener() {
     if (area === 'local' && changes.tabGroups) {
       _allGroups = changes.tabGroups.newValue || [];
       const query = searchInputEl ? searchInputEl.value : '';
-      renderGroupList(filterGroups(_allGroups, query));
+      renderGroupList(filterGroups(applyTagFilter(_allGroups), query));
     }
   });
 }
@@ -533,7 +643,7 @@ function bindStorageListener() {
 function bindSearchInput() {
   if (!searchInputEl) return;
   searchInputEl.addEventListener('input', () => {
-    renderGroupList(filterGroups(_allGroups, searchInputEl.value));
+    renderGroupList(filterGroups(applyTagFilter(_allGroups), searchInputEl.value));
   });
 }
 

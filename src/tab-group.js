@@ -87,6 +87,25 @@ async function moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex) {
   await chrome.storage.local.set({ tabGroups: groups });
 }
 
+async function addTagToGroup(groupId, tag) {
+  const groups = await getAllTabGroups();
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+  if (!group.tags) group.tags = [];
+  const trimmed = tag.trim();
+  if (!trimmed || group.tags.includes(trimmed)) return;
+  group.tags.push(trimmed);
+  await chrome.storage.local.set({ tabGroups: groups });
+}
+
+async function removeTagFromGroup(groupId, tag) {
+  const groups = await getAllTabGroups();
+  const group = groups.find(g => g.id === groupId);
+  if (!group || !group.tags) return;
+  group.tags = group.tags.filter(t => t !== tag);
+  await chrome.storage.local.set({ tabGroups: groups });
+}
+
 async function addEmptySession(name) {
   const groups = await getAllTabGroups();
   const newGroup = {
@@ -152,5 +171,5 @@ async function notifyExpiringTabGroups() {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite, moveTabToGroup, setTabGroupTTL, checkExpiredTabGroups };
+  module.exports = { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, addEmptySession, toggleFavorite, moveTabToGroup, setTabGroupTTL, checkExpiredTabGroups, addTagToGroup, removeTagFromGroup };
 }
