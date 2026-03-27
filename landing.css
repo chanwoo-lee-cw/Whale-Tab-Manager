@@ -1070,6 +1070,111 @@ header::before {
 }
 
 /* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(28, 25, 22, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s var(--ease) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: 0 8px 24px rgba(28, 25, 22, 0.14);
+  padding: 24px 24px 20px;
+  width: 320px;
+  max-width: calc(100vw - 48px);
+  animation: fadeUp 0.18s var(--ease) both;
+}
+
+.modal-message {
+  font-size: 15px;
+  color: var(--text-1);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 7px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--text-1);
+  outline: none;
+  margin-bottom: 16px;
+}
+
+.modal-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(181, 91, 38, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-btn {
+  padding: 7px 18px;
+  border-radius: var(--r);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+
+.modal-btn-cancel {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--surface-3);
+  border-color: var(--border-2);
+  color: var(--text-1);
+}
+
+.modal-btn-ok {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+}
+
+.modal-btn-ok:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-light);
+}
+
+.modal-btn-danger {
+  background: var(--danger);
+  border: 1px solid var(--danger);
+  color: #fff;
+}
+
+.modal-btn-danger:hover {
+  background: #c43535;
+  border-color: #c43535;
+}
+
+/* ═══════════════════════════════════════
    UTILITY
 ═══════════════════════════════════════ */
 .hidden { display: none !important; }

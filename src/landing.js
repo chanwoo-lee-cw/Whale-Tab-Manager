@@ -13,6 +13,75 @@ const _foldedIds = new Set();
 let _activeTagFilter = null;
 let _sidebarTab = 'session';
 
+function showConfirm(message) {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+    const msg = document.createElement('p');
+    msg.className = 'modal-message';
+    msg.textContent = message;
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'modal-btn modal-btn-cancel';
+    cancelBtn.textContent = '취소';
+    const okBtn = document.createElement('button');
+    okBtn.className = 'modal-btn modal-btn-danger';
+    okBtn.textContent = '삭제';
+    function close(result) { document.body.removeChild(overlay); resolve(result); }
+    cancelBtn.addEventListener('click', () => close(false));
+    okBtn.addEventListener('click', () => close(true));
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(false); });
+    document.addEventListener('keydown', function onKey(e) {
+      if (e.key === 'Escape') { document.removeEventListener('keydown', onKey); close(false); }
+    });
+    actions.append(cancelBtn, okBtn);
+    box.append(msg, actions);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    okBtn.focus();
+  });
+}
+
+function showPrompt(message, defaultValue = '') {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const box = document.createElement('div');
+    box.className = 'modal-box';
+    const msg = document.createElement('p');
+    msg.className = 'modal-message';
+    msg.textContent = message;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'modal-input';
+    input.value = defaultValue;
+    const actions = document.createElement('div');
+    actions.className = 'modal-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'modal-btn modal-btn-cancel';
+    cancelBtn.textContent = '취소';
+    const okBtn = document.createElement('button');
+    okBtn.className = 'modal-btn modal-btn-ok';
+    okBtn.textContent = '확인';
+    function close(result) { document.body.removeChild(overlay); resolve(result); }
+    cancelBtn.addEventListener('click', () => close(null));
+    okBtn.addEventListener('click', () => close(input.value));
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') close(input.value);
+      if (e.key === 'Escape') close(null);
+    });
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(null); });
+    actions.append(cancelBtn, okBtn);
+    box.append(msg, input, actions);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    input.select();
+  });
+}
+
 function formatDate(timestamp) {
   const d = new Date(timestamp);
   const pad = n => String(n).padStart(2, '0');
@@ -451,7 +520,7 @@ function createGroupCardEl(group) {
   deleteGroupBtn.title = '그룹 삭제';
   deleteGroupBtn.textContent = '🗑';
   deleteGroupBtn.addEventListener('click', async () => {
-    if (!confirm(`"${group.name}" 그룹을 삭제하시겠습니까?`)) return;
+    if (!await showConfirm(`"${group.name}" 그룹을 삭제하시겠습니까?`)) return;
     _selectedIds.delete(group.id);
     updateMergeBar();
     await deleteTabGroup(group.id);
@@ -722,7 +791,7 @@ function bindMergeBar() {
     const ids = [..._selectedIds];
     if (ids.length < 2) return;
     const firstName = _allGroups.find(g => g.id === ids[0])?.name || '병합된 그룹';
-    const newName = prompt('병합된 그룹 이름을 입력하세요:', firstName);
+    const newName = await showPrompt('병합된 그룹 이름을 입력하세요:', firstName);
     if (newName === null) return;
     await mergeTabGroups(ids, newName.trim() || firstName);
     _selectedIds.clear();
