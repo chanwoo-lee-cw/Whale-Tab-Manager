@@ -84,7 +84,10 @@ async function moveTabToGroup(srcGroupId, tabId, dstGroupId, dstIndex) {
   srcGroup.tabs = srcGroup.tabs.filter(t => t.id !== tabId);
   const clampedIndex = Math.min(dstIndex, dstGroup.tabs.length);
   dstGroup.tabs.splice(clampedIndex, 0, tab);
-  await chrome.storage.local.set({ tabGroups: groups });
+  const updated = srcGroup.tabs.length === 0
+    ? groups.filter(g => g.id !== srcGroupId)
+    : groups;
+  await chrome.storage.local.set({ tabGroups: updated });
 }
 
 async function moveGroupToIndex(srcGroupId, dstGroupId) {

@@ -1,4 +1,4 @@
-const { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups } = require('../src/tab-group');
+const { getAllTabGroups, renameTabGroup, deleteTabGroup, deleteTabFromGroup, mergeTabGroups, moveTabToGroup } = require('../src/tab-group');
 
 beforeEach(() => { __resetChromeMock(); });
 
@@ -128,6 +128,34 @@ describe('mergeTabGroups', () => {
     await mergeTabGroups(['g1', 'g2'], '');
     const groups = await getAllTabGroups();
     expect(groups[0].name).toBe('첫 번째');
+  });
+});
+
+describe('moveTabToGroup', () => {
+  test('탭을 다른 그룹으로 이동한다', async () => {
+    await seedGroups([
+      makeGroup('g1', '그룹1', [makeTab('t1'), makeTab('t2')]),
+      makeGroup('g2', '그룹2', [makeTab('t3')]),
+    ]);
+    await moveTabToGroup('g1', 't1', 'g2', 0);
+    const groups = await getAllTabGroups();
+    const g1 = groups.find(g => g.id === 'g1');
+    const g2 = groups.find(g => g.id === 'g2');
+    expect(g1.tabs).toHaveLength(1);
+    expect(g2.tabs[0].id).toBe('t1');
+    expect(g2.tabs).toHaveLength(2);
+  });
+
+  test('마지막 탭을 다른 그룹으로 이동하면 원본 그룹이 자동 삭제된다', async () => {
+    await seedGroups([
+      makeGroup('g1', '그룹1', [makeTab('t1')]),
+      makeGroup('g2', '그룹2', [makeTab('t2')]),
+    ]);
+    await moveTabToGroup('g1', 't1', 'g2', 0);
+    const groups = await getAllTabGroups();
+    expect(groups).toHaveLength(1);
+    expect(groups[0].id).toBe('g2');
+    expect(groups[0].tabs).toHaveLength(2);
   });
 });
 
