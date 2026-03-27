@@ -672,6 +672,11 @@ function createGroupCardEl(group) {
     ttlPanel.classList.toggle('hidden');
   });
 
+  const tabCountBadge = document.createElement('span');
+  tabCountBadge.className = 'tab-count-badge';
+  tabCountBadge.textContent = `탭 ${group.tabs.length}개`;
+
+  headerActions.appendChild(tabCountBadge);
   headerActions.appendChild(favoriteBtn);
   headerActions.appendChild(ttlBtn);
   headerActions.appendChild(foldBtn);
@@ -736,6 +741,12 @@ function createGroupCardEl(group) {
   });
 
   foldBtn.addEventListener('click', () => toggleFoldGroup(group.id, tabList, foldBtn));
+
+  // 헤더 빈 영역 클릭으로 Fold 토글
+  header.addEventListener('click', e => {
+    if (e.target.closest('button, input, .group-name, .group-name-input')) return;
+    toggleFoldGroup(group.id, tabList, foldBtn);
+  });
 
   const tagFooter = document.createElement('div');
   tagFooter.className = 'tag-footer';

@@ -26,11 +26,12 @@
   --danger:       #b83030;
   --danger-dim:   rgba(184, 48, 48, 0.08);
 
-  --font-serif:   'D2Coding', 'Malgun Gothic', '맑은 고딕', sans-serif;
-  --font-mono:    'D2Coding', 'Malgun Gothic', '맑은 고딕', monospace;
-  --font-ui:      'D2Coding', 'Malgun Gothic', '맑은 고딕', sans-serif;
+  --font-serif:   'Nanum Myeongjo', Georgia, 'Batang', serif;
+  --font-mono:    'Nanum Gothic Coding', 'D2Coding', monospace;
+  --font-ui:      'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 
   --content-max:  1100px;
+  --header-height: 62px;
   --r:            6px;
   --ease:         cubic-bezier(0.4, 0, 0.2, 1);
   --t:            0.17s;
@@ -52,7 +53,9 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-ui);
   font-size: 16px;
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse 120% 40% at 50% 0%, rgba(181, 91, 38, 0.06) 0%, transparent 60%),
+    var(--bg);
   color: var(--text-1);
   min-height: 100vh;
   line-height: 1.55;
@@ -80,7 +83,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 200;
-  background: var(--surface);
+  background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 8px rgba(100, 80, 50, 0.06);
 }
@@ -92,7 +95,8 @@ header::before {
   background: linear-gradient(
     90deg,
     var(--accent) 0%,
-    rgba(181, 91, 38, 0.5) 50%,
+    #c97830 18%,
+    rgba(181, 91, 38, 0.45) 50%,
     transparent 100%
   );
 }
@@ -122,10 +126,10 @@ header::before {
 
 .brand-text h1 {
   font-family: var(--font-serif);
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
   color: var(--text-1);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
@@ -243,6 +247,18 @@ header::before {
   padding: 12px 8px;
 }
 
+#session-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+
+#session-sidebar::-webkit-scrollbar { width: 4px; }
+#session-sidebar::-webkit-scrollbar-track { background: transparent; }
+#session-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-2);
+  border-radius: 2px;
+}
+
 #session-sidebar:empty {
   display: none;
 }
@@ -352,27 +368,37 @@ header::before {
 ═══════════════════════════════════════ */
 #empty-state {
   text-align: center;
-  padding: 100px 0;
-  animation: fadeUp 0.4s var(--ease) both;
+  padding: 120px 0 100px;
+  animation: fadeUp 0.5s var(--ease) both;
 }
 
 .empty-icon {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
   color: var(--border-2);
-  margin-bottom: 22px;
+  margin-bottom: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  box-shadow: var(--shadow-card);
 }
 
 #empty-state > p {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 400;
   color: var(--text-2);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
 }
 
 .empty-sub {
   font-size: 15px;
   color: var(--text-3);
+  line-height: 1.6;
 }
 
 /* ═══════════════════════════════════════
@@ -434,9 +460,8 @@ header::before {
   background: var(--surface-3);
 }
 
-.group-card.is-folded .group-header::after {
-  content: attr(data-tab-count);
-  margin-left: auto;
+.tab-count-badge {
+  display: none;
   font-size: 13px;
   font-family: var(--font-mono);
   color: var(--text-3);
@@ -446,6 +471,11 @@ header::before {
   padding: 1px 7px;
   white-space: nowrap;
   flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.group-card.is-folded .tab-count-badge {
+  display: inline-block;
 }
 
 .group-card.is-favorite {
@@ -467,7 +497,17 @@ header::before {
   padding: 13px 14px 13px 16px;
   background: var(--surface-2);
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
 }
+
+.group-header button,
+.group-header input,
+.group-header .group-name {
+  cursor: default;
+}
+
+.group-header .group-name { cursor: text; }
+.group-header button      { cursor: pointer; }
 
 .group-select {
   flex-shrink: 0;
@@ -496,8 +536,8 @@ header::before {
 .group-name {
   display: block;
   font-family: var(--font-serif);
-  font-size: 17.5px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text-1);
   line-height: 1.25;
   cursor: pointer;
@@ -514,8 +554,8 @@ header::before {
 
 .group-name-input {
   font-family: var(--font-serif);
-  font-size: 17.5px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   background: var(--surface);
   border: 1px solid var(--accent);
   border-radius: 3px;

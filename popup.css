@@ -20,8 +20,9 @@
   --danger-dim:   rgba(184, 48, 48, 0.08);
   --danger-border: rgba(184, 48, 48, 0.2);
 
-  --font-serif: 'D2Coding', 'Malgun Gothic', '맑은 고딕', sans-serif;
-  --font-ui:    'D2Coding', 'Malgun Gothic', '맑은 고딕', sans-serif;
+  --font-serif: 'Nanum Myeongjo', Georgia, 'Batang', serif;
+  --font-ui:    'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-mono:  'Nanum Gothic Coding', 'D2Coding', monospace;
 
   --r:    5px;
   --t:    0.15s;
@@ -57,7 +58,7 @@ body {
 
 /* ─── HEADER ─── */
 header {
-  background: var(--surface);
+  background: linear-gradient(180deg, #fff 0%, var(--surface-2) 100%);
   border-bottom: 1px solid var(--border);
   padding: 0;
 }
