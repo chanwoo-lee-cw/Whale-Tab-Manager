@@ -25,7 +25,6 @@ Whale 브라우저를 기반으로 한 탭 관리 확장 프로그램.
 ## 랜딩 페이지 — 기본
 - [x] 랜딩 페이지로 지금까지 저장한 탭을 관리하고, 이동할 수 있어야한다.
 - [x] 저장된 탭으로 이동할 수 있어야 한다.
-- [x] 랜딩 페이지 디자인은 frontend-design 플러그인을 활용한다.
 
 ## 랜딩 페이지 — 세션 관리
 - [x] 빈 탭 세션은 사용자가 직접 추가할 수 있다.
@@ -63,12 +62,13 @@ Whale 브라우저를 기반으로 한 탭 관리 확장 프로그램.
 - Manifest V3
 
 # 코드 규칙
-- 변수/함수명: camelCase
-- 파일명: kebab-case (예: `tab-save.js`)
-- 상수: UPPER_SNAKE_CASE
-- 함수는 단일 책임 원칙을 따른다
-- DOM 조작은 `landing-page` 스크립트에서만 수행한다
-- 비즈니스 로직과 UI 로직을 분리한다
+- MUST:변수/함수명= camelCase
+- MUST:파일명-kebab-case (예: `tab-save.js`)
+- MUST:상수-UPPER_SNAKE_CASE
+- MUST:함수는 단일 책임 원칙을 따른다
+- MUST:DOM 조작은 `landing-page` 스크립트에서만 수행한다
+- MUST:디자인은 frontend-design 플러그인을 활용한다.
+- MUST:비즈니스 로직과 UI 로직을 분리한다
 
 # 주의사항
 - Whale은 Chromium 기반이므로 `chrome.*` API를 그대로 사용할 수 있다

@@ -14,14 +14,34 @@ let _activeTagFilter = null;
 let _sidebarTab = 'session';
 
 function showConfirm(message) {
+  // "이름" 그룹을… 패턴에서 이름 추출
+  const nameMatch = message.match(/^"(.+?)"/);
+  const groupName = nameMatch ? nameMatch[1] : null;
+
   return new Promise(resolve => {
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     const box = document.createElement('div');
-    box.className = 'modal-box';
+    box.className = 'modal-box modal-box-danger';
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'modal-icon';
+    iconEl.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
+
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+    const title = document.createElement('p');
+    title.className = 'modal-title';
+    title.textContent = '세션 삭제';
     const msg = document.createElement('p');
     msg.className = 'modal-message';
-    msg.textContent = message;
+    if (groupName) {
+      msg.innerHTML = `<span class="modal-name">${groupName}</span> 세션을 삭제하시겠습니까?<br><span class="modal-sub">이 작업은 되돌릴 수 없습니다.</span>`;
+    } else {
+      msg.textContent = message;
+    }
+    body.append(title, msg);
+
     const actions = document.createElement('div');
     actions.className = 'modal-actions';
     const cancelBtn = document.createElement('button');
@@ -30,6 +50,7 @@ function showConfirm(message) {
     const okBtn = document.createElement('button');
     okBtn.className = 'modal-btn modal-btn-danger';
     okBtn.textContent = '삭제';
+
     function close(result) { document.body.removeChild(overlay); resolve(result); }
     cancelBtn.addEventListener('click', () => close(false));
     okBtn.addEventListener('click', () => close(true));
@@ -38,10 +59,10 @@ function showConfirm(message) {
       if (e.key === 'Escape') { document.removeEventListener('keydown', onKey); close(false); }
     });
     actions.append(cancelBtn, okBtn);
-    box.append(msg, actions);
+    box.append(iconEl, body, actions);
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-    okBtn.focus();
+    cancelBtn.focus();
   });
 }
 
@@ -563,7 +584,21 @@ function createGroupCardEl(group) {
     return [...all];
   }
 
+  let _suggestIndex = -1;
+
+  function setSuggestIndex(idx) {
+    const items = tagSuggestEl.querySelectorAll('.tag-autocomplete-item');
+    items.forEach(el => el.classList.remove('is-active'));
+    _suggestIndex = idx;
+    if (idx >= 0 && idx < items.length) {
+      items[idx].classList.add('is-active');
+      items[idx].scrollIntoView({ block: 'nearest' });
+      tagInput.value = items[idx].textContent;
+    }
+  }
+
   function showSuggestions(query) {
+    _suggestIndex = -1;
     const q = query.trim().toLowerCase();
     const suggestions = q
       ? getExistingTags().filter(t => t.toLowerCase().includes(q))
@@ -608,12 +643,23 @@ function createGroupCardEl(group) {
     await refreshGroupList();
   }
 
-  tagInput.addEventListener('input', () => showSuggestions(tagInput.value));
+  tagInput.addEventListener('input', () => { _suggestIndex = -1; showSuggestions(tagInput.value); });
   tagInput.addEventListener('focus', () => { if (tagInput.value === '') showSuggestions(''); });
   tagInput.addEventListener('blur', () => setTimeout(() => { tagSuggestEl.classList.add('hidden'); closeTagInput(); }, 150));
   tagInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') commitTag();
-    if (e.key === 'Escape') closeTagInput();
+    const items = tagSuggestEl.querySelectorAll('.tag-autocomplete-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSuggestIndex(Math.min(_suggestIndex + 1, items.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSuggestIndex(Math.max(_suggestIndex - 1, -1));
+      if (_suggestIndex === -1) tagInput.value = '';
+    } else if (e.key === 'Enter') {
+      commitTag();
+    } else if (e.key === 'Escape') {
+      closeTagInput();
+    }
   });
 
   const ttlBtn = document.createElement('button');
