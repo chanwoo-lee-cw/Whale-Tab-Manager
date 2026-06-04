@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Whale Tab Manager",
+  "name": "탭 아카이브",
   "version": "1.0.0",
   "description": "현재 열려 있는 탭을 그룹 단위로 저장하고 관리합니다.",
   "permissions": ["tabs", "storage", "activeTab", "notifications", "alarms"],
@@ -15,7 +15,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Tab Archive",
+    "default_title": "탭 아카이브",
     "default_icon": {
       "16":  "icons/icon16.png",
       "32":  "icons/icon32.png",

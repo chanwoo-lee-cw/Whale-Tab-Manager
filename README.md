@@ -5,6 +5,13 @@
 현재 열려 있는 탭을 그룹 단위로 저장하고, 랜딩 페이지에서 저장된 탭을 관리하거나 다시 열 수 있습니다.
 Claude Code를 이용해 작성했습니다.
 
+## Whalre 스토어
+
+![store-page](store-page.png)
+
+
+👉 [Whale 스토어에서 설치하기](https://store.whale.naver.com/detail/iccjckbmdejgndbfjmpjnafdjgjhkjja)
+
 <br>
 
 ## 스크린샷
@@ -61,6 +68,14 @@ Claude Code를 이용해 작성했습니다.
 <br>
 
 ## 설치 방법
+
+### Whale 스토어에서 설치 (권장)
+
+[Whale 스토어 페이지](https://store.whale.naver.com/detail/iccjckbmdejgndbfjmpjnafdjgjhkjja)에 접속해 **다운로드** 버튼을 클릭하면 바로 설치됩니다.
+
+<br>
+
+### 개발자 모드로 직접 설치
 
 1. 이 저장소를 클론합니다.
    ```bash

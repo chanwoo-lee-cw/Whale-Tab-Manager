@@ -1354,6 +1354,26 @@ header::before {
 }
 
 /* ═══════════════════════════════════════
+   PAGE FOOTER
+═══════════════════════════════════════ */
+.page-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 32px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+}
+.page-footer a {
+  color: var(--text-3);
+  text-decoration: none;
+}
+.page-footer a:hover { color: var(--accent); }
+
+/* ═══════════════════════════════════════
    UTILITY
 ═══════════════════════════════════════ */
 .hidden { display: none !important; }

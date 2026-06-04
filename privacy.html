@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>개인정보처리방침 — 탭 아카이브</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --bg:           #f2ede5;
+      --surface:      #ffffff;
+      --surface-2:    #faf8f4;
+      --border:       #e4ddd2;
+      --border-2:     #d6cfc3;
+      --accent:       #b55b26;
+      --accent-light: #c9692f;
+      --accent-dim:   rgba(181, 91, 38, 0.10);
+      --text-1:       #1c1916;
+      --text-2:       #4a4440;
+      --text-3:       #857e78;
+      --warn:         #8a6000;
+      --warn-bg:      rgba(138, 96, 0, 0.07);
+      --warn-border:  rgba(138, 96, 0, 0.22);
+      --font-serif:   'Nanum Myeongjo', Georgia, 'Batang', serif;
+      --font-mono:    'Nanum Gothic Coding', 'D2Coding', monospace;
+      --font-ui:      'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      --r:            6px;
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      background:
+        radial-gradient(ellipse 120% 40% at 50% 0%, rgba(181, 91, 38, 0.06) 0%, transparent 60%),
+        var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Grain ─── */
+    .grain {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
+
+    /* ─── Header ─── */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 8px rgba(100, 80, 50, 0.06);
+    }
+    header::before {
+      content: '';
+      display: block; height: 3px;
+      background: linear-gradient(90deg, var(--accent) 0%, #c97830 18%, rgba(181, 91, 38, 0.45) 50%, transparent 100%);
+    }
+    .header-inner {
+      display: flex; align-items: center; gap: 16px;
+      max-width: 800px; margin: 0 auto;
+      padding: 14px 32px;
+    }
+    .back-link {
+      display: flex; align-items: center; gap: 7px;
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-3); text-decoration: none;
+      padding: 5px 10px; border-radius: var(--r);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+    .back-link:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+    .header-brand {
+      display: flex; align-items: center; gap: 9px;
+      margin-left: auto;
+    }
+    .brand-mark { color: var(--accent); }
+    .brand-name {
+      font-family: var(--font-serif); font-size: 17px; font-weight: 700;
+      color: var(--text-1); letter-spacing: -0.02em;
+    }
+
+    /* ─── Document ─── */
+    .doc-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+
+    .doc-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .doc-kicker::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
+    }
+
+    .doc-title {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 800;
+      color: var(--text-1);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .doc-meta {
+      font-size: 13px; color: var(--text-3);
+      font-family: var(--font-mono);
+      margin-bottom: 40px;
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+    }
+    .doc-meta span { display: flex; align-items: center; gap: 5px; }
+    .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border-2); }
+
+    .doc-lead {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--r) var(--r) 0;
+      padding: 18px 20px;
+      color: var(--text-2);
+      font-size: 14.5px;
+      line-height: 1.8;
+      margin-bottom: 52px;
+    }
+    .doc-lead strong { color: var(--text-1); }
+
+    /* ─── Sections ─── */
+    .section { margin-bottom: 44px; }
+    .section + .section {
+      padding-top: 44px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-num {
+      font-family: var(--font-mono); font-size: 10.5px;
+      color: var(--accent); letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 20px; font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.025em;
+      margin-bottom: 16px;
+    }
+
+    .section p {
+      color: var(--text-2); font-size: 14.5px;
+      margin-bottom: 12px;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ─── Data Table ─── */
+    .data-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .data-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .data-table thead tr {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border-2);
+    }
+    .data-table th {
+      padding: 10px 14px; text-align: left;
+      font-weight: 600; font-size: 12px;
+      color: var(--text-3); font-family: var(--font-mono);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .data-table td {
+      padding: 10px 14px; color: var(--text-2);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--surface-2); }
+
+    code {
+      font-family: var(--font-mono); font-size: 12.5px;
+      background: var(--accent-dim); color: var(--accent);
+      padding: 1px 6px; border-radius: 3px;
+    }
+
+    /* ─── Highlight Box ─── */
+    .highlight-box {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 18px; margin: 16px 0;
+    }
+    .highlight-box .icon { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+    .highlight-box p { margin-bottom: 0; font-size: 14px; }
+
+    /* ─── Warning Box ─── */
+    .warn-box {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: var(--r);
+      padding: 16px 18px; margin: 16px 0;
+    }
+    .warn-box .icon { color: var(--warn); flex-shrink: 0; margin-top: 2px; }
+    .warn-box-label {
+      font-family: var(--font-mono); font-size: 10.5px;
+      color: var(--warn); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 5px; font-weight: 700;
+    }
+    .warn-box p { color: var(--warn); font-size: 13.5px; margin: 0; line-height: 1.7; }
+
+    /* ─── Bullet List ─── */
+    .bullet-list {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 8px;
+      margin: 12px 0;
+    }
+    .bullet-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14.5px; color: var(--text-2);
+    }
+    .bullet-list li::before {
+      content: '—';
+      color: var(--accent); font-family: var(--font-mono);
+      font-size: 12px; flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* ─── Ordered List ─── */
+    .rights-list {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 10px;
+      margin: 16px 0;
+    }
+    .rights-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 14.5px; color: var(--text-2);
+    }
+    .rights-list .bullet {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid rgba(181, 91, 38, 0.2);
+      color: var(--accent); font-size: 11px;
+      font-family: var(--font-mono); font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* ─── Contact Card ─── */
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px 24px;
+      margin-top: 16px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .contact-card .icon { color: var(--accent); flex-shrink: 0; }
+    .contact-info { display: flex; flex-direction: column; gap: 4px; }
+    .contact-label {
+      font-size: 11px; color: var(--text-3);
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .contact-name { font-size: 14.5px; font-weight: 600; color: var(--text-1); }
+    .contact-card a {
+      color: var(--accent); font-size: 14px;
+      text-decoration: none;
+    }
+    .contact-card a:hover { text-decoration: underline; }
+
+    /* ─── Footer / AI Notice ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 40px;
+      margin-top: 48px;
+    }
+    .ai-notice {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px 24px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .ai-icon {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: var(--accent-dim);
+      border: 1px solid rgba(181, 91, 38, 0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); margin-top: 1px;
+    }
+    .ai-notice-label {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--accent); letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 5px;
+    }
+    .ai-notice p { font-size: 13px; color: var(--text-3); line-height: 1.65; margin: 0; }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 20px;
+      font-size: 12px; color: var(--text-3);
+      font-family: var(--font-mono);
+    }
+    .footer-bottom a { color: var(--text-3); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--accent); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      .doc-wrap { padding: 36px 20px 60px; }
+      .header-inner { padding: 12px 20px; }
+      .data-table th, .data-table td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header>
+    <div class="header-inner">
+      <a href="landing.html" class="back-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Tab Archive로 돌아가기
+      </a>
+      <div class="header-brand">
+        <svg class="brand-mark" width="18" height="18" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon points="13,2 24,8 24,18 13,24 2,18 2,8" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <polygon points="13,7 19,10.5 19,15.5 13,19 7,15.5 7,10.5" fill="currentColor" opacity="0.3"/>
+        </svg>
+        <span class="brand-name">탭 아카이브</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="doc-wrap">
+    <p class="doc-kicker">Privacy Policy</p>
+    <h1 class="doc-title">개인정보처리방침</h1>
+    <p class="doc-meta">
+      <span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        최종 수정일: 2025년 5월 18일
+      </span>
+      <span class="meta-dot"></span>
+      <span>적용 버전: 1.0.0 이상</span>
+    </p>
+
+    <div class="doc-lead">
+      탭 아카이브(Tab Archive)는 사용자가 열고 있는 브라우저 탭을 <strong>사용자 본인의 기기 내</strong>에 저장하고 관리할 수 있도록 돕는 Whale 브라우저 확장 프로그램입니다.
+      <br><br>
+      본 확장앱은 <strong>개발자가 사용자의 어떠한 정보도 수집·전송·열람하지 않으며</strong>, 아래에 설명되는 모든 데이터는 사용자의 기기에서 사용자 자신에 의해 저장·관리됩니다. 본 방침은 그 처리 과정을 투명하게 안내하기 위해 작성되었습니다.
+    </div>
+
+    <!-- 01. 처리하는 정보 -->
+    <section class="section">
+      <p class="section-num">01</p>
+      <h2 class="section-title">처리하는 정보</h2>
+      <p>탭 아카이브가 사용자의 기기 내에 저장하는 정보는 다음과 같습니다.</p>
+      <div class="data-table-wrap">
+        <table class="data-table" aria-label="저장 항목 목록">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>설명</th>
+              <th>저장 시점</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>url</code></td>
+              <td>탭의 URL 주소</td>
+              <td>탭 저장 시</td>
+            </tr>
+            <tr>
+              <td><code>title</code></td>
+              <td>탭의 페이지 제목</td>
+              <td>탭 저장 시</td>
+            </tr>
+            <tr>
+              <td><code>favIconUrl</code></td>
+              <td>탭의 파비콘 이미지 URL</td>
+              <td>탭 저장 시</td>
+            </tr>
+            <tr>
+              <td>세션 이름 · 태그</td>
+              <td>사용자가 직접 입력한 그룹 이름 및 태그</td>
+              <td>사용자 입력 시</td>
+            </tr>
+            <tr>
+              <td>만료 시각 (TTL)</td>
+              <td>사용자가 설정한 탭 그룹의 만료 날짜·시각</td>
+              <td>TTL 설정 시</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn-box" role="note">
+        <span class="icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </span>
+        <div>
+          <p class="warn-box-label">민감 정보 안내</p>
+          <p>URL과 페이지 제목에는 메일함 주소, 검색어, 세션 식별자 등 민감한 정보가 포함될 수 있습니다. 모든 데이터는 사용자의 기기에만 저장되며 외부로 전송되지 않지만, 민감한 탭을 저장하실 때는 이 점을 인지하고 이용해 주시기 바랍니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02. 저장 방식 및 외부 전송 -->
+    <section class="section">
+      <p class="section-num">02</p>
+      <h2 class="section-title">저장 방식 및 외부 전송</h2>
+      <ul class="bullet-list">
+        <li>저장된 모든 정보는 <code>chrome.storage.local</code> API를 통해 <strong>사용자의 기기 내부에만</strong> 저장됩니다.</li>
+        <li>외부 서버, 분석 도구, 광고 네트워크 등 <strong>어떠한 제3자에게도 전송되지 않습니다.</strong></li>
+        <li>인터넷 연결 없이도 모든 기능이 동작합니다.</li>
+        <li>개발자는 사용자의 저장 데이터에 접근할 수 있는 수단을 갖고 있지 않습니다.</li>
+      </ul>
+    </section>
+
+    <!-- 03. 보유 및 이용 기간 -->
+    <section class="section">
+      <p class="section-num">03</p>
+      <h2 class="section-title">보유 및 이용 기간</h2>
+      <ul class="bullet-list">
+        <li>저장된 데이터는 <strong>사용자가 직접 삭제하거나 확장앱을 제거할 때까지</strong> 사용자의 기기에 보관됩니다.</li>
+        <li>TTL(만료 시각)이 설정된 그룹은 만료 이후에도 사용자가 직접 삭제하기 전까지 유지됩니다.</li>
+        <li>확장앱을 제거하면 <code>chrome.storage.local</code>에 저장된 모든 데이터가 함께 삭제됩니다.</li>
+      </ul>
+    </section>
+
+    <!-- 04. 권한 사용 목적 -->
+    <section class="section">
+      <p class="section-num">04</p>
+      <h2 class="section-title">권한 사용 목적</h2>
+      <p>확장앱이 요청하는 권한과 각 권한의 사용 목적은 다음과 같습니다.</p>
+      <div class="data-table-wrap">
+        <table class="data-table" aria-label="권한 목록">
+          <thead>
+            <tr><th>권한</th><th>사용 목적</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>tabs</code></td>
+              <td>현재 탭의 URL, 제목, 파비콘을 읽어 저장합니다.</td>
+            </tr>
+            <tr>
+              <td><code>storage</code></td>
+              <td>탭 그룹 데이터를 기기 내에 영구 저장합니다.</td>
+            </tr>
+            <tr>
+              <td><code>activeTab</code></td>
+              <td>현재 활성 탭 정보에 접근합니다.</td>
+            </tr>
+            <tr>
+              <td><code>notifications</code></td>
+              <td>TTL 만료 하루 전 알림을 전송합니다.</td>
+            </tr>
+            <tr>
+              <td><code>alarms</code></td>
+              <td>TTL 만료 여부를 주기적으로 확인합니다 (1시간 간격).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>각 권한은 위 목적 외의 용도로 사용되지 않습니다.</p>
+    </section>
+
+    <!-- 05. 사용자의 권리 -->
+    <section class="section">
+      <p class="section-num">05</p>
+      <h2 class="section-title">사용자의 권리</h2>
+      <p>사용자는 언제든지 저장된 데이터에 대해 다음 권리를 행사할 수 있습니다.</p>
+      <ul class="rights-list" role="list">
+        <li>
+          <span class="bullet" aria-hidden="true">1</span>
+          <span><strong>열람 및 확인</strong> — 탭 아카이브 랜딩 페이지에서 저장된 모든 탭 그룹을 언제든지 확인할 수 있습니다.</span>
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">2</span>
+          <span><strong>삭제</strong> — 개별 탭, 탭 그룹을 랜딩 페이지에서 직접 삭제할 수 있습니다. 확장앱 제거 시 모든 로컬 데이터가 함께 삭제됩니다.</span>
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">3</span>
+          <span><strong>동의 철회</strong> — 확장앱을 제거하면 저장된 모든 데이터가 삭제되며, 이후 어떠한 정보도 저장되지 않습니다.</span>
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">4</span>
+          <span><strong>처리 정지 요청</strong> — 개인정보 처리 정지 또는 기타 권리 행사를 원하실 경우 아래 연락처로 문의하실 수 있습니다.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 06. 아동의 개인정보 보호 -->
+    <section class="section">
+      <p class="section-num">06</p>
+      <h2 class="section-title">아동의 개인정보 보호</h2>
+      <p>본 확장앱은 <strong>만 14세 미만 아동을 대상으로 하지 않으며</strong>, 별도의 아동 개인정보를 수집하지 않습니다. 보호자께서는 아동의 확장앱 이용 여부를 직접 관리해 주시기 바랍니다.</p>
+    </section>
+
+    <!-- 08. 방침 변경 고지 -->
+    <section class="section">
+      <p class="section-num">08</p>
+      <h2 class="section-title">방침 변경 고지</h2>
+      <p>본 개인정보처리방침은 법령 변경 또는 서비스 변경에 따라 수정될 수 있습니다.</p>
+      <ul class="bullet-list">
+        <li>변경 시 확장앱 업데이트 노트 또는 본 페이지를 통해 안내드립니다.</li>
+        <li>변경된 방침은 게시 시점부터 효력이 발생합니다.</li>
+        <li>중요한 변경 사항이 있을 경우 본 페이지 상단의 "최종 수정일"이 갱신됩니다.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <div class="footer-bottom">
+        <span>© 2025 탭 아카이브</span>
+        <a href="mailto:ritualforrain@naver.com">ritualforrain@naver.com</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
